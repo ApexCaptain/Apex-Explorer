@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "911513470922",
+    "firebase_url": "https://apex-explorer.firebaseio.com",
+    "project_id": "apex-explorer",
+    "storage_bucket": "apex-explorer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911513470922:android:e7c0253f8f817ac6",
+        "android_client_info": {
+          "package_name": "com.gmail.ayteneve93.apex.explorer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "911513470922-jne0gs14tm88hj4anbikcgvj6qa6cjvk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gmail.ayteneve93.apex.explorer",
+            "certificate_hash": "6ae3c9bd9e35d6838bfab9e23e76f8b18bd4028f"
+          }
+        },
+        {
+          "client_id": "911513470922-53bn0fa68e5uphle0hgefgas9vuvq8a0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCVR04PQE6aRjP2QmjARPvPkrYjZ9KzwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "911513470922-53bn0fa68e5uphle0hgefgas9vuvq8a0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
