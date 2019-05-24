@@ -34,6 +34,8 @@ dependencies {
 
     // FireBase Core
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
+    // FireBase Dynamic Links
+    implementation "com.google.firebase:firebase-dynamic-links:$firebase_dynamic_links_version"
 
 }
 apply plugin: 'com.google.gms.google-services'

@@ -12,12 +12,23 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".activities.intro.IntroActivity">
+        <activity android:name=".activities.entry.EntryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                        android:host="ayteneve93.page.link"
+                        android:pathPrefix="/rnIx"
+                        android:scheme="https"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.intro.IntroActivity">
         </activity>
     </application>
 
