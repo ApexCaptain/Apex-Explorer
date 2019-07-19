@@ -1,4 +1,4 @@
-package com.gmail.ayteneve93.apex.explorer
+package com.ayteneve93.apexexplorer
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.gmail.ayteneve93.apex.explorer", appContext.packageName)
+        assertEquals("com.ayteneve93.apexexplorer", appContext.packageName)
     }
 }

@@ -1,47 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:dist="http://schemas.android.com/apk/distribution"
-          package="com.gmail.ayteneve93.apex.explorer">
+          package="com.ayteneve93.apexexplorer">
 
     <dist:module dist:instant="true"/>
 
     <application
-            android:name=".ApexExplorer"
-            android:allowBackup="false"
-            android:fullBackupContent="false"
-            android:fullBackupOnly="false"
+            android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-        <activity
-            android:name=".activities.entry.EntryActivity"
-            android:noHistory="true">
-
-            <!-- Set as Launcher Activity -->
+            android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- Set as Entry Point of Deep | Instance Application Linkage Parser -->
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-
-                <data
-                        android:host="ayteneve93.page.link"
-                        android:pathPrefix="/rnIx"
-                        android:scheme="https"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.intro.IntroActivity"
-            android:noHistory="true">
         </activity>
     </application>
 

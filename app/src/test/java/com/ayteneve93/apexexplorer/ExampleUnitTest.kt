@@ -1,4 +1,4 @@
-package com.gmail.ayteneve93.apex.explorer
+package com.ayteneve93.apexexplorer
 
 import org.junit.Test
 
