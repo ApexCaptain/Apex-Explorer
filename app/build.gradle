@@ -102,6 +102,9 @@ dependencies {
 
     // Google Login
     implementation "com.google.android.gms:play-services-auth:$play_services_auth_version"
+
+    // Custom View Pager Indicator
+    implementation project(':customIndicator')
 }
 
 apply plugin: 'com.google.gms.google-services'
