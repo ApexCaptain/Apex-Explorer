@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 
-abstract class BaseActivity<T: ViewDataBinding, V: BaseViewModel<*>> : AppCompatActivity(), BaseFragment.CallBack {
+abstract class BaseActivity<T: ViewDataBinding, V: BaseViewModel<*>> : AppCompatActivity() {
 
     protected lateinit var mViewDataBinding: T
 
@@ -35,11 +35,4 @@ abstract class BaseActivity<T: ViewDataBinding, V: BaseViewModel<*>> : AppCompat
         mViewDataBinding.executePendingBindings()
     }
 
-    override fun onFragmentAttached() {
-
-    }
-
-    override fun onFragmentDetached(tag: String) {
-
-    }
 }

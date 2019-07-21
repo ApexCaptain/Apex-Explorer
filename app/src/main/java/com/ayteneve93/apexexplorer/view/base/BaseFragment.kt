@@ -1,6 +1,7 @@
 package com.ayteneve93.apexexplorer.view.base
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,10 +29,8 @@ abstract class BaseFragment<T: ViewDataBinding, V: BaseViewModel<*>> : Fragment(
         super.onAttach(context)
         if(context is BaseActivity<*, *>) {
             mActivity = context
-            mActivity?.onFragmentAttached()
         }
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,11 +59,6 @@ abstract class BaseFragment<T: ViewDataBinding, V: BaseViewModel<*>> : Fragment(
     override fun onDetach() {
         mActivity = null
         super.onDetach()
-    }
-
-    interface CallBack {
-        fun onFragmentAttached()
-        fun onFragmentDetached(tag: String)
     }
 
 }

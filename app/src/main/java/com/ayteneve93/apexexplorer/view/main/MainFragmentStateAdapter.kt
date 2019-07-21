@@ -6,22 +6,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.ayteneve93.apexexplorer.view.main.fragments.favorite.FavoriteFragment
 import com.ayteneve93.apexexplorer.view.main.fragments.filelist.FileListFragment
 
-/*
-        mViewDataBinding.mainViewPager.adapter = object : FragmentStateAdapter(this) {
-            override fun createFragment(position: Int): Fragment {
-                return when(position) {
-                    0 -> FileListFragment.newInstance()
-                    else -> FavoriteFragment.newInstance()
-                }
-            }
+class MainFragmentStateAdapter(private val activity : AppCompatActivity, private val onFragmentChanged : (prevFragmentState : MainFragmentState, newFragmentState : MainFragmentState, isRight : Boolean) -> Unit) : FragmentStateAdapter(activity) {
 
-            override fun getItemCount(): Int {
-                return 2
-            }
-        }
- */
-
-class MainFragmentStateAdapter(private val activity : AppCompatActivity) : FragmentStateAdapter(activity) {
+    private var mCurrentPosition : Int = MainFragmentState.FILE_LIST.ordinal
 
     override fun createFragment(position: Int): Fragment {
         return when(MainFragmentState.getState(position)) {
@@ -30,5 +17,21 @@ class MainFragmentStateAdapter(private val activity : AppCompatActivity) : Fragm
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        if(position != mCurrentPosition) {
+            onFragmentChanged(
+                MainFragmentState.getState(mCurrentPosition),
+                MainFragmentState.getState(position),
+                mCurrentPosition < position
+            )
+            mCurrentPosition = position
+        }
+        return super.getItemId(position)
+    }
+
+
+
     override fun getItemCount() : Int = MainFragmentState.getCount()
+
+
 }

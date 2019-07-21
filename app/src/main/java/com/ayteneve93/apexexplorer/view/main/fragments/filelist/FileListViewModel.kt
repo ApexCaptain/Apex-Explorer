@@ -6,5 +6,4 @@ import com.ayteneve93.apexexplorer.view.base.BaseViewModel
 class FileListViewModel(
     application : Application
 ) : BaseViewModel<Any>(application){
-
 }

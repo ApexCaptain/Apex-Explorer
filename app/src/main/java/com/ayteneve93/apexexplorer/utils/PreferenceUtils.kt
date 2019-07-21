@@ -1,4 +1,4 @@
-package com.ayteneve93.apexexplorer.application
+package com.ayteneve93.apexexplorer.utils
 
 import android.app.Application
 import android.content.Context
