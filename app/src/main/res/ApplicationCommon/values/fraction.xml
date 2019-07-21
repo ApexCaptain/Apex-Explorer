@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <fraction name = "half">0.5</fraction>
+
+    <fraction name = "one_third">0.33</fraction>
+    <fraction name = "two_thirds">0.67</fraction>
+
+    <fraction name = "one_quarter">0.25</fraction>
+    <fraction name = "three_quarters">0.75</fraction>
+
+    <fraction name="ten_percent">0.1</fraction>
+    <fraction name="fifteen_percent">0.15</fraction>
+
+</resources>

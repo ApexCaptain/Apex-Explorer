@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable name="viewModel" type="com.ayteneve93.apexexplorer.view.entry.EntryViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".view.entry.EntryActivity">
+
+        <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/hr_gl_two_thirds"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/entry_animation_container">
+            <com.airbnb.lottie.LottieAnimationView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="@string/lottie_intro"
+                    app:lottie_loop="true"
+                    android:id="@+id/entry_animation_view"/>
+        </FrameLayout>
+
+        <FrameLayout
+                android:id="@+id/entry_progress_indicator_container"
+                android:background="#aaFFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/entry_animation_container"
+                app:layout_constraintBottom_toTopOf="@+id/hr_gl_two_thirds"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="528dp" tools:layout_editor_absoluteX="168dp"
+                android:visibility="@{safeUnbox(viewModel.mIsOnProgress) ? View.VISIBLE : View.GONE}" >
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                    android:id="@+id/entry_progress_indicator"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <!-- Guid Lines -->
+        <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content" android:id="@+id/hr_gl_two_thirds"
+                                                    app:layout_constraintGuide_percent="@fraction/two_thirds"
+                                                    android:orientation="horizontal"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
