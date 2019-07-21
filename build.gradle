@@ -27,6 +27,7 @@ buildscript {
         navigation_version = '2.1.0-beta01'
         legacy_version = '1.0.0'
         biometric_version = '1.0.0-alpha04'
+        view_pager_version = '1.0.0-beta02'
 
         // FireBase
         firebase_core_version = '17.0.1'

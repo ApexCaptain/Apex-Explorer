@@ -27,4 +27,8 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
 
     }
 
+    companion object {
+        fun newInstance() = FavoriteFragment()
+    }
+
 }

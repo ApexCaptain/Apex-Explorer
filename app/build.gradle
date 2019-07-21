@@ -8,7 +8,7 @@ android {
     buildToolsVersion "29.0.1"
     defaultConfig {
         applicationId "com.ayteneve93.apexexplorer"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -48,6 +48,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha08'
     kapt "com.android.databinding:compiler:$android_plugin_version"
 
 
@@ -70,6 +71,8 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
 
     implementation "androidx.legacy:legacy-support-v4:$legacy_version"
+
+    implementation "androidx.viewpager2:viewpager2:$view_pager_version"
 
 
     // AirBnb Lottie Animation View

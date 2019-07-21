@@ -31,7 +31,10 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
     }
 
     override fun setUp() {
+    }
 
+    companion object {
+        fun newInstance() = FileListFragment()
     }
 
 }

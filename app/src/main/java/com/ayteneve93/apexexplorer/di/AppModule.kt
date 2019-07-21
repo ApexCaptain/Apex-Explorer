@@ -1,8 +1,9 @@
 package com.ayteneve93.apexexplorer.di
 
+import com.ayteneve93.apexexplorer.data.DataModelManager
 import com.ayteneve93.apexexplorer.prompt.BiometricAuthPrompt.BiometricAuthManager
 import com.ayteneve93.apexexplorer.prompt.FireBaseAuthPrompt.FireBaseAuthManager
-import com.ayteneve93.apexexplorer.utils.ApplicationPreference
+import com.ayteneve93.apexexplorer.application.ApplicationPreference
 import com.ayteneve93.apexexplorer.view.entry.EntryViewModel
 import com.ayteneve93.apexexplorer.view.main.MainViewModel
 import com.ayteneve93.apexexplorer.view.main.fragments.favorite.FavoriteViewModel
@@ -13,7 +14,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
     // Activities
     viewModel {
-        EntryViewModel(get())
+        EntryViewModel(get(), get())
     }
     viewModel {
         MainViewModel(get())
@@ -28,6 +29,9 @@ val viewModelModule = module {
 }
 
 val singleTonModule  = module {
+    single {
+        DataModelManager()
+    }
     single {
         FireBaseAuthManager()
     }

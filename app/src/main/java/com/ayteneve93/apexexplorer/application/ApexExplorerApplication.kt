@@ -1,4 +1,4 @@
-package com.ayteneve93.apexexplorer
+package com.ayteneve93.apexexplorer.application
 
 import android.app.Application
 import com.ayteneve93.apexexplorer.di.apexExplorerApplicationModule

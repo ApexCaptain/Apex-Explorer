@@ -1,5 +1,6 @@
 package com.ayteneve93.apexexplorer.view.base
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

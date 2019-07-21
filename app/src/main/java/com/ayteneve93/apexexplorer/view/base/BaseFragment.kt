@@ -32,6 +32,8 @@ abstract class BaseFragment<T: ViewDataBinding, V: BaseViewModel<*>> : Fragment(
         }
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true) // Fragment Option Menu 사용
@@ -64,4 +66,5 @@ abstract class BaseFragment<T: ViewDataBinding, V: BaseViewModel<*>> : Fragment(
         fun onFragmentAttached()
         fun onFragmentDetached(tag: String)
     }
+
 }
