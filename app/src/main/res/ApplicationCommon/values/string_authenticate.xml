@@ -10,11 +10,6 @@
         Oops, failed to sign in
     </string>
 
-    <!-- 지문 인증 실패-->
-    <string name="tst_fingerprint_failed">
-        Fingerprint authentication failed
-    </string>
-
     <!-- 지문 인증 사용 다이얼로그 -->
     <string name="dlg_ask_to_use_fingerprint_desc">
         Would you like to use fingerprint?
@@ -47,20 +42,16 @@
     </string>
 
     <!-- 지문 인증 에러 -->
-    <string name="tst_fingerprint_err_canceled">
-        Canceled by user
+    <string name="tst_fingerprint_temporal_error">
+        There was a temporary problem. I\'ll try again
     </string>
 
-    <string name="tst_fingerprint_err_hw_unavailable">
-        Hardware unavailable
+    <string name="tst_fingerprint_canceled">
+        The process has been canceled. It\'ll terminate.
     </string>
 
-    <string name="tst_fingerprint_err_none_enrolled">
-        No fingerprint is registered
-    </string>
-
-    <string name="tst_fingerprint_err_no_hardware">
-        No hardware
+    <string name="tst_fingerprint_unavailable">
+        Unavailable to process
     </string>
 
 

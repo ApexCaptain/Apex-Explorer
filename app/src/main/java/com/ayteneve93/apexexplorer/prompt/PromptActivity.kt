@@ -5,7 +5,9 @@ import androidx.biometric.BiometricPrompt
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Window
+import androidx.biometric.BiometricConstants
 import androidx.fragment.app.FragmentActivity
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.prompt.BiometricAuthPrompt.BiometricAuthIntentPreference
@@ -71,16 +73,19 @@ class PromptActivity : FragmentActivity() {
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
                         mBiometricAuthManager.onRequestFingerprintAuthentication(false, errorCode, errString.toString())
+                        finish()
                     }
 
                     override fun onAuthenticationSucceeded(resultInfo: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(resultInfo)
                         mBiometricAuthManager.onRequestFingerprintAuthentication(true)
+                        finish()
                     }
 
                     override fun onAuthenticationFailed() {
                         super.onAuthenticationFailed()
                         mBiometricAuthManager.onRequestFingerprintAuthentication(false)
+                        finish()
                     }
                 }).authenticate(
                     // BiometricPrompt 의 빌드 정보
@@ -90,8 +95,6 @@ class PromptActivity : FragmentActivity() {
                         .setNegativeButtonText(getString(R.string.fmt_fingerprint_negative_button))
                         .build()
                 )
-
-                finish()
             }
             null -> finish()
         }

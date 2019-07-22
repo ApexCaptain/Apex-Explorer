@@ -10,19 +10,14 @@
         로그인에 실패했습니다
     </string>
 
-    <!-- 지문 인증 실패-->
-    <string name="tst_fingerprint_failed">
-        지문 인증에 실패했습니다
-    </string>
-
-    <!-- 지문 인증 사용 다이얼로그 -->
+    <!-- 지문 인증 사용 여부 확인 다이얼로그 -->
     <string name="dlg_ask_to_use_fingerprint_desc">
         지문 인증 기능을 사용하시겠습니까?
-        \n보다 안전하게 쓸 수 있습니다.
+        \n보다 더 안전해집니다!
     </string>
 
     <string name="dlg_ask_to_use_fingerprint_do_not_ask_again">
-        다시 물어보지 않기
+        다시 묻지 않기
     </string>
 
     <string name="dlg_ask_to_use_fingerprint_positive_button">
@@ -47,21 +42,16 @@
     </string>
 
     <!-- 지문 인증 에러 -->
-    <string name="tst_fingerprint_err_canceled">
-        사용자에 의해 취소됬습니다
+    <string name="tst_fingerprint_temporal_error">
+        일시적인 문제가 발생했습니다. 다시 시도합니다
     </string>
 
-    <string name="tst_fingerprint_err_hw_unavailable">
-        하드웨어 사용 불가능합니다
+    <string name="tst_fingerprint_canceled">
+        인증 절차가 취소되었습니다. 애플리케이션이 종료됩니다.
     </string>
 
-    <string name="tst_fingerprint_err_none_enrolled">
-        지문이 등록되지 않았습니다
+    <string name="tst_fingerprint_unavailable">
+        지문 인증 사용이 불가능합니다
     </string>
-
-    <string name="tst_fingerprint_err_no_hardware">
-        하드웨어가 없습니다
-    </string>
-
 
 </resources>

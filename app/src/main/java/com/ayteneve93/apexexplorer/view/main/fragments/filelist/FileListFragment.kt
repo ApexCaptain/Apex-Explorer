@@ -72,10 +72,12 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
     }
 
     private fun setFilesRecyclerAdapter() {
+        /*
         val rootFile = File(Environment.getRootDirectory().toString())
         rootFile.listFiles()?.forEach {
             Log.d("ayteneve93_test", "name : ${it.name}")
         }
+        */
 
         /*
         mActivity?.applicationContext?.let {

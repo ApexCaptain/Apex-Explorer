@@ -39,14 +39,13 @@ class AppTitleRecyclerAdapter(private val activity : AppCompatActivity, private 
         )
     }
 
-    private val titleShowUpAnim = AnimationUtils.loadAnimation(activity, R.anim.anim_app_title_show)
-    private val titleShowUpAnimDelayMills = 120L
+    private val titleShowUpAnimDelayMills = 100L
     private fun showTitleAnimation(activity: AppCompatActivity, position : Int = 0) {
         Handler().postDelayed({
             activity.runOnUiThread{
-                itemViewList[position].apply {
-                    visibility = View.VISIBLE
-                    startAnimation(titleShowUpAnim)
+                itemViewList[position].let {
+                    it.visibility = View.VISIBLE
+                    it.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_app_title_show))
                 }
                 if(position == itemViewList.size - 1) {
                     mOnRecyclerStartUpAnimEndListener?.let { it() }

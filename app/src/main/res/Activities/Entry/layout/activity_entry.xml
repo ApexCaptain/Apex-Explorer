@@ -30,6 +30,31 @@
                     android:id="@+id/entry_animation_view"/>
         </FrameLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/app_title_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/item_app_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:minWidth="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/entry_animation_container"
+        />
+
+        <com.wang.avi.AVLoadingIndicatorView
+                app:indicatorName="BallSpinFadeLoaderIndicator"
+                app:indicatorColor="@color/colorBrightDark"
+                style="@style/AVLoadingIndicatorView.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp" android:layout_marginTop="8dp"
+                android:visibility="@{safeUnbox(viewModel.mIsOnProgress) ? View.VISIBLE : View.GONE}"
+                app:layout_constraintTop_toBottomOf="@+id/app_title_view" android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.25"/>
+
+        <!--
         <FrameLayout
                 android:id="@+id/entry_progress_indicator_container"
                 android:background="#aaFFFFFF"
@@ -48,6 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"/>
         </FrameLayout>
+        -->
 
         <!-- Guid Lines -->
         <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
@@ -55,17 +81,6 @@
                                                     android:id="@+id/hr_gl_two_thirds"
                                                     app:layout_constraintGuide_percent="@fraction/two_thirds"
                                                     android:orientation="horizontal"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/app_title_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:listitem="@layout/item_app_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:minWidth="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/entry_animation_container"
-        />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -119,6 +119,8 @@ dependencies {
     // Google Login
     implementation "com.google.android.gms:play-services-auth:$play_services_auth_version"
 
+    implementation "com.wang.avi:library:2.1.3"
+
     // Custom View Pager Indicator
     implementation project(':customIndicator')
 }

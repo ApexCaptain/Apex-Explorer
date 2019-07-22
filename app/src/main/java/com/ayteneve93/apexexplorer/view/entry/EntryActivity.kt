@@ -2,8 +2,10 @@ package com.ayteneve93.apexexplorer.view.entry
 
 import android.content.Intent
 import android.hardware.biometrics.BiometricManager
+import android.os.Handler
 import android.util.Log
 import android.widget.Toast
+import androidx.biometric.BiometricConstants
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ayteneve93.apexexplorer.BR
 import com.ayteneve93.apexexplorer.R
@@ -31,6 +33,7 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     override fun getBindingVariable(): Int { return BR.viewModel }
 
     override fun setUp() {
+        mEntryViewModel.mIsOnProgress.set(true)
         mDataModelManager.getUserAccountInfoModel().isAuthenticated.let {
             if(it == null || !it) showTitleAnimation()
             else toMainActivity(false)
@@ -41,15 +44,16 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
         mViewDataBinding.appTitleView.adapter = AppTitleRecyclerAdapter(
             this, mDataModelManager.getAppTitleModel(this))
             .onRecyclerStartUpAnimEnd {
-                mEntryViewModel.mIsOnProgress.set(true)
                 runFireBaseAuthenticate()
             }
         mViewDataBinding.appTitleView.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun runFireBaseAuthenticate() {
+        mEntryViewModel.mIsOnProgress.set(true)
         mFireBaseAuthManager.requestGoogleFireBaseAuthentication(this) {
             isSucceed, account ->
+            mEntryViewModel.mIsOnProgress.set(false)
             account?.let {
                 if(isSucceed) {
                     mDataModelManager.setUserAccountInfoModel(it)
@@ -82,28 +86,41 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
         toMainActivity()
     }
 
+    val biometricRetryHandler = Handler()
+    val biometricRetryDelayMills = 3500L
     private fun runBiometricAuthenticate() {
         mBiometricManager.requestFingerprintAuthentication(this) {
             isSucceed: Boolean, errCode: Int?, errString: String? ->
             if(isSucceed) toMainActivity()
-            else {
-                if(errCode == null) {
-                    Toast.makeText(this, R.string.tst_fingerprint_failed, Toast.LENGTH_LONG).show()
-                    runBiometricAuthenticate()
-                    return@requestFingerprintAuthentication
-                }
-                errCode.let {
-                    val tstErrMsg : String = when(it) {
-                        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> getString(R.string.tst_fingerprint_err_hw_unavailable)
-                        BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> getString(R.string.tst_fingerprint_err_none_enrolled)
-                        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> getString(R.string.tst_fingerprint_err_no_hardware)
-                        else -> getString(R.string.tst_fingerprint_err_canceled)
+            else if(errCode != null) {
+                when(errCode) {
+                    BiometricConstants.ERROR_HW_UNAVAILABLE,
+                    BiometricConstants.ERROR_UNABLE_TO_PROCESS,
+                    BiometricConstants.ERROR_CANCELED,
+                    BiometricConstants.ERROR_NO_SPACE -> {
+                        Toast.makeText(this, R.string.tst_fingerprint_temporal_error, Toast.LENGTH_LONG).show()
+                        biometricRetryHandler.removeCallbacksAndMessages(null)
+                        biometricRetryHandler.postDelayed({
+                            runBiometricAuthenticate()
+                        }, biometricRetryDelayMills)
                     }
-                    mApplicationPreference.setBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, false)
-                    Toast.makeText(this, tstErrMsg, Toast.LENGTH_LONG).show()
-                    runBiometricAuthenticate()
+                    BiometricConstants.ERROR_TIMEOUT,
+                    BiometricConstants.ERROR_LOCKOUT,
+                    BiometricConstants.ERROR_VENDOR,
+                    BiometricConstants.ERROR_NEGATIVE_BUTTON,
+                    BiometricConstants.ERROR_USER_CANCELED-> {
+                        Toast.makeText(this, R.string.tst_fingerprint_canceled, Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                    BiometricConstants.ERROR_NO_BIOMETRICS,
+                    BiometricConstants.ERROR_LOCKOUT_PERMANENT,
+                    BiometricConstants.ERROR_HW_NOT_PRESENT -> {
+                        Toast.makeText(this, R.string.tst_fingerprint_unavailable, Toast.LENGTH_LONG).show()
+                        mApplicationPreference.setBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, false)
+                            .setBooleanUserPreference(PreferenceCategory.User.SET_NOT_TO_ASK_ACTIVATE_FINGERPRINT_AUTHENTICATION, true)
+                        toMainActivity()
+                    }
                 }
-
             }
         }
     }
@@ -112,7 +129,6 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     private fun toMainActivity(showWelcomeText : Boolean = true) {
         mDataModelManager.getUserAccountInfoModel().isAuthenticated = true
         if(showWelcomeText) Toast.makeText(this, getString(R.string.tst_auth_succeed, mDataModelManager.getUserAccountInfoModel().name), Toast.LENGTH_LONG).show()
-        mEntryViewModel.mIsOnProgress.set(false)
         startActivity(Intent(this, MainActivity::class.java))
     }
 
