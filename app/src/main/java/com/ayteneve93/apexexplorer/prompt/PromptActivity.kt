@@ -37,6 +37,7 @@ class PromptActivity : FragmentActivity() {
                 val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.default_web_client_id))
                     .requestEmail()
+                    .requestProfile()
                     .build()
                 val signInIntent = GoogleSignIn.getClient(this, gso).signInIntent
                 startActivityForResult(signInIntent, RequestCode.GOOGLE_REQUEST_CODE)
@@ -82,9 +83,9 @@ class PromptActivity : FragmentActivity() {
                 }).authenticate(
                     // BiometricPrompt 의 빌드 정보
                     BiometricPrompt.PromptInfo.Builder()
-                        .setTitle(getString(R.string.biometric_prompt_title))
-                        .setDescription(getString(R.string.biometric_prompt_desc))
-                        .setNegativeButtonText(getString(R.string.biometric_prompt_negative_button))
+                        .setTitle(getString(R.string.fmt_fingerprint_title))
+                        .setDescription(getString(R.string.fmt_fingerprint_desc))
+                        .setNegativeButtonText(getString(R.string.fmt_fingerprint_negative_button))
                         .build()
                 )
             }

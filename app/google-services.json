@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "911513470922-1dltnf8h0s9ng8negdvj5jno7mu3ab0p.apps.googleusercontent.com",
+          "client_id": "911513470922-3af7fhpdiltehbt692c6706ktit246m3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ayteneve93.apexexplorer",
-            "certificate_hash": "1ab56d28d69f7279a5a5a07631318281211c84d9"
+            "certificate_hash": "e1f1237ea3202528fd979e83001f9f78627cb769"
           }
         },
         {

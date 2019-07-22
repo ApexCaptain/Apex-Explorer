@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.ayteneve93.apexexplorer.prompt.PromptActivity
 import com.ayteneve93.apexexplorer.prompt.PromptIntentAction
+import java.lang.Exception
 
 class BiometricAuthManager {
 
@@ -22,14 +23,21 @@ class BiometricAuthManager {
     }
 
     fun checkIsFingerprintAuthenticationAvailable(context: Context) : Boolean {
-        val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        val packageManager = context.packageManager
-        if(
-            !packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
-            || !keyguardManager.isKeyguardSecure
-            || ActivityCompat.checkSelfPermission(context, Manifest.permission.USE_BIOMETRIC)!= PackageManager.PERMISSION_GRANTED
-        ) return false
-        return true
+        try {
+            val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+            val packageManager = context.packageManager
+            if (
+                !packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+                || !keyguardManager.isKeyguardSecure
+                || ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.USE_BIOMETRIC
+                ) != PackageManager.PERMISSION_GRANTED
+            ) return false
+            return true
+        } catch (anyException : Exception) {
+            return false
+        }
     }
 
     fun onRequestFingerprintAuthentication(isSucceed : Boolean, errCode : Int? = null, errString : String? = null) {

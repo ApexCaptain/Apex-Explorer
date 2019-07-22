@@ -2,6 +2,7 @@ package com.ayteneve93.apexexplorer.data
 
 import android.content.Context
 import com.ayteneve93.apexexplorer.R
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 class DataModelManager{
 
@@ -12,6 +13,18 @@ class DataModelManager{
             appTitleModelList.add(AppTitleModel(it.toString()))
         }
         return appTitleModelList
+    }
+
+    private val mUserAccountInfoModel : UserAccountInfoModel = UserAccountInfoModel(null, null)
+    fun setUserAccountInfoModel(account : GoogleSignInAccount) : UserAccountInfoModel {
+        return mUserAccountInfoModel.apply {
+            email = account.email
+            name = account.displayName
+        }
+    }
+
+    fun getUserAccountInfoModel() : UserAccountInfoModel {
+        return  mUserAccountInfoModel
     }
 
 }

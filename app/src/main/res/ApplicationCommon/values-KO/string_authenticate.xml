@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 최종 로그인 결과 -->
+    <string name="tst_auth_succeed">
+        %1$s님 환영합니다!
+    </string>
+
+    <string name="tst_auth_failed">
+        로그인에 실패했습니다
+    </string>
+
+    <!-- 지문 인증 실패-->
+    <string name="tst_fingerprint_failed">
+        지문 인증에 실패했습니다
+    </string>
+
+    <!-- 지문 인증 사용 다이얼로그 -->
+    <string name="dlg_ask_to_use_fingerprint_desc">
+        지문 인증 기능을 사용하시겠습니까?
+        \n보다 안전하게 쓸 수 있습니다.
+    </string>
+
+    <string name="dlg_ask_to_use_fingerprint_do_not_ask_again">
+        다시 물어보지 않기
+    </string>
+
+    <string name="dlg_ask_to_use_fingerprint_positive_button">
+        네
+    </string>
+
+    <string name="dlg_ask_to_use_fingerprint_negative_button">
+        아니오
+    </string>
+
+    <!-- 지문 인증 프롬프트 -->
+    <string name="fmt_fingerprint_title">
+        저장소가 보호되고 있습니다
+    </string>
+
+    <string name="fmt_fingerprint_desc">
+        지문 인증을 통해 사용할 수 있습니다
+    </string>
+
+    <string name="fmt_fingerprint_negative_button">
+        취소
+    </string>
+
+    <!-- 지문 인증 에러 -->
+    <string name="tst_fingerprint_err_canceled">
+        사용자에 의해 취소됬습니다
+    </string>
+
+    <string name="tst_fingerprint_err_hw_unavailable">
+        하드웨어 사용 불가능합니다
+    </string>
+
+    <string name="tst_fingerprint_err_none_enrolled">
+        지문이 등록되지 않았습니다
+    </string>
+
+    <string name="tst_fingerprint_err_no_hardware">
+        하드웨어가 없습니다
+    </string>
+
+
+</resources>

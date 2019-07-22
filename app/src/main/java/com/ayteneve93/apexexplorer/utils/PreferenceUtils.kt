@@ -10,11 +10,12 @@ class ApplicationPreference(
 ) {
     private val userPreference : SharedPreferences = application.getSharedPreferences(USER_PREF_KEY, Context.MODE_PRIVATE)
 
-    fun setBooleanUserPreference(attribute : PreferenceCategory.User, insertValue : Boolean) {
+    fun setBooleanUserPreference(attribute : PreferenceCategory.User, insertValue : Boolean) : ApplicationPreference {
         userPreference.edit().putBoolean(attribute.attributeName, insertValue).apply()
+        return this
     }
     fun getBooleanUserPreference(attribute : PreferenceCategory.User, default : Boolean) : Boolean {
-        return userPreference.getBoolean(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION.attributeName, default)
+        return userPreference.getBoolean(attribute.attributeName, default)
     }
 }
 

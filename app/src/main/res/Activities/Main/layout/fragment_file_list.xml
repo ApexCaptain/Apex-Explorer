@@ -8,14 +8,39 @@
                 name="viewModel"
                 type="com.ayteneve93.apexexplorer.view.main.fragments.filelist.FileListViewModel"/>
     </data>
-    <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
+        <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="f 1"/>
+                android:layout_height="match_parent">
 
-    </FrameLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.Toolbar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                </androidx.appcompat.widget.Toolbar>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

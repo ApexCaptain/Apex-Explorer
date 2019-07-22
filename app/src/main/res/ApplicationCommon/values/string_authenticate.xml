@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 최종 로그인 결과 -->
+    <string name="tst_auth_succeed">
+        Welcome, %1$s !
+    </string>
+
+    <string name="tst_auth_failed">
+        Oops, failed to sign in
+    </string>
+
+    <!-- 지문 인증 실패-->
+    <string name="tst_fingerprint_failed">
+        Fingerprint authentication failed
+    </string>
+
+    <!-- 지문 인증 사용 다이얼로그 -->
+    <string name="dlg_ask_to_use_fingerprint_desc">
+        Would you like to use fingerprint?
+        \n It\'d be much safer to use !
+    </string>
+
+    <string name="dlg_ask_to_use_fingerprint_do_not_ask_again">
+        Don\'t ask me again !
+    </string>
+
+    <string name="dlg_ask_to_use_fingerprint_positive_button">
+        Sure
+    </string>
+
+    <string name="dlg_ask_to_use_fingerprint_negative_button">
+        Nope
+    </string>
+
+    <!-- 지문 인증 프롬프트 -->
+    <string name="fmt_fingerprint_title">
+        Your storage is protected
+    </string>
+
+    <string name="fmt_fingerprint_desc">
+        Please confirm your fingerprint to access it
+    </string>
+
+    <string name="fmt_fingerprint_negative_button">
+        Cancel
+    </string>
+
+    <!-- 지문 인증 에러 -->
+    <string name="tst_fingerprint_err_canceled">
+        Canceled by user
+    </string>
+
+    <string name="tst_fingerprint_err_hw_unavailable">
+        Hardware unavailable
+    </string>
+
+    <string name="tst_fingerprint_err_none_enrolled">
+        No fingerprint is registered
+    </string>
+
+    <string name="tst_fingerprint_err_no_hardware">
+        No hardware
+    </string>
+
+
+</resources>

@@ -1,20 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tst_firebase_auth_succeed">
-        로그인에 성공했습니다
-    </string>
-    <string name="tst_firebase_auth_failure">
-        로그인에 실패했습니다
-    </string>
 
-    <string name="biometric_prompt_title">
-        지문 확인
-    </string>
-    <string name="biometric_prompt_desc">
-        저장소가 잠겨있습니다. \n지문 인증을 진행해주시기 바랍니다.
-    </string>
-    <string name="biometric_prompt_negative_button">
-        취소
-    </string>
 
 </resources>

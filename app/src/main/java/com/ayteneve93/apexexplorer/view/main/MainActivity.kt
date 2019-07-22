@@ -39,7 +39,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     private fun setBroadcastReceiver() {
         val mainIntentFilter = IntentFilter()
-            // addAction
+            // 인텐트 필터에 액션 추가해야 함 (현재 정해진 사항 없음)
         registerReceiver(mMainBroadcastReceiver, mainIntentFilter)
     }
 

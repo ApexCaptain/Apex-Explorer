@@ -4,6 +4,17 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    signingConfigs {
+        def Properties props = new Properties()
+        def propFile = new File('gradle.properties')
+        if(propFile.canRead()) props.load(new FileInputStream(propFile))
+        debug {
+            storeFile file(props['debug_keystore_path'])
+            storePassword props['debug_keystore_password']
+            keyAlias  props['debug_key_alias']
+            keyPassword props['debug_key_password']
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.1"
     defaultConfig {
@@ -18,6 +29,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
 
@@ -50,6 +64,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.android.material:material:1.1.0-alpha08'
     kapt "com.android.databinding:compiler:$android_plugin_version"
+
 
 
     // Android X
