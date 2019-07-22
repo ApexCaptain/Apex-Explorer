@@ -31,7 +31,10 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     override fun getBindingVariable(): Int { return BR.viewModel }
 
     override fun setUp() {
-        showTitleAnimation()
+        mDataModelManager.getUserAccountInfoModel().isAuthenticated.let {
+            if(it == null || !it) showTitleAnimation()
+            else toMainActivity(false)
+        }
     }
 
     private fun showTitleAnimation() {
@@ -106,9 +109,9 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     }
 
     // 성공 메시지 날려야 함
-    private fun toMainActivity() {
+    private fun toMainActivity(showWelcomeText : Boolean = true) {
         mDataModelManager.getUserAccountInfoModel().isAuthenticated = true
-        Toast.makeText(this, getString(R.string.tst_auth_succeed, mDataModelManager.getUserAccountInfoModel().name), Toast.LENGTH_LONG).show()
+        if(showWelcomeText) Toast.makeText(this, getString(R.string.tst_auth_succeed, mDataModelManager.getUserAccountInfoModel().name), Toast.LENGTH_LONG).show()
         mEntryViewModel.mIsOnProgress.set(false)
         startActivity(Intent(this, MainActivity::class.java))
     }

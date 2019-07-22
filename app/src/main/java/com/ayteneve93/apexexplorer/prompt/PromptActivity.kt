@@ -5,6 +5,7 @@ import androidx.biometric.BiometricPrompt
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Window
 import androidx.fragment.app.FragmentActivity
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.prompt.BiometricAuthPrompt.BiometricAuthIntentPreference
@@ -24,6 +25,7 @@ class PromptActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
         when(intent.action) {
             PromptIntentAction.FIRE_BASE_AUTH -> requestFireBaseAuth()
             PromptIntentAction.BIOMETRIC -> requestBiometricAuth()
@@ -88,6 +90,8 @@ class PromptActivity : FragmentActivity() {
                         .setNegativeButtonText(getString(R.string.fmt_fingerprint_negative_button))
                         .build()
                 )
+
+                finish()
             }
             null -> finish()
         }

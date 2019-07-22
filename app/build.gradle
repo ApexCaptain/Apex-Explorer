@@ -66,9 +66,10 @@ dependencies {
     kapt "com.android.databinding:compiler:$android_plugin_version"
 
 
-
     // Android X
     implementation "androidx.appcompat:appcompat:$support_library_version"
+
+    implementation "androidx.cardview:cardview:$card_view_version"
 
     implementation "androidx.core:core-ktx:$ktx_version"
 

@@ -10,14 +10,6 @@ import com.ayteneve93.apexexplorer.prompt.FireBaseAuthPrompt.FireBaseAuthManager
 import com.ayteneve93.apexexplorer.view.base.BaseViewModel
 
 class EntryViewModel(
-    application: Application,
-    private val dataModelManager: DataModelManager
+    application: Application
 ) : BaseViewModel<Any>(application) {
-
-    val appTitleObservableList = ObservableArrayList<AppTitleModel>()
-
-    init {
-        appTitleObservableList.addAll(dataModelManager.getAppTitleModel(getApplication()))
-    }
-
 }

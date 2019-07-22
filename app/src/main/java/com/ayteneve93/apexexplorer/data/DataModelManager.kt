@@ -3,6 +3,10 @@ package com.ayteneve93.apexexplorer.data
 import android.content.Context
 import com.ayteneve93.apexexplorer.R
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.lang.StringBuilder
 
 class DataModelManager{
 
@@ -15,7 +19,7 @@ class DataModelManager{
         return appTitleModelList
     }
 
-    private val mUserAccountInfoModel : UserAccountInfoModel = UserAccountInfoModel(null, null)
+    private val mUserAccountInfoModel : UserAccountInfoModel = UserAccountInfoModel(false, null, null)
     fun setUserAccountInfoModel(account : GoogleSignInAccount) : UserAccountInfoModel {
         return mUserAccountInfoModel.apply {
             email = account.email
@@ -25,6 +29,9 @@ class DataModelManager{
 
     fun getUserAccountInfoModel() : UserAccountInfoModel {
         return  mUserAccountInfoModel
+    }
+
+    fun getFileListFrom(context : Context, path : String) {
     }
 
 }

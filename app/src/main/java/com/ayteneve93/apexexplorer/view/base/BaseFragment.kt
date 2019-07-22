@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment
 
 abstract class BaseFragment<T: ViewDataBinding, V: BaseViewModel<*>> : Fragment() {
 
-    private lateinit var mViewDataBinding: T
-    private var mActivity: BaseActivity<*, *>? = null
+    protected lateinit var mViewDataBinding: T
+    protected var mActivity: BaseActivity<*, *>? = null
 
     @LayoutRes
     abstract fun getLayoutId(): Int
