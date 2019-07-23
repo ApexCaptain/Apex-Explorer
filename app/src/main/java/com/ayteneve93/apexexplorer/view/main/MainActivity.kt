@@ -6,18 +6,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import android.view.MotionEvent
-import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.LinearLayout
 import androidx.databinding.library.baseAdapters.BR
 import androidx.viewpager2.widget.ViewPager2
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.databinding.ActivityMainBinding
 import com.ayteneve93.apexexplorer.view.base.BaseActivity
-import me.liangfei.indicator.RubberIndicator
+import me.relex.circleindicator.CircleIndicator3
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
@@ -45,6 +41,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         setViewPagerProperties()
     }
 
+
     private fun setBroadcastReceiver() {
         val mainIntentFilter = IntentFilter()
         //mainIntentFilter.addAction("stop")
@@ -60,44 +57,40 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     private var currentPageState : MainFragmentState = MainFragmentState.FILE_LIST
     private fun setViewPagerProperties() {
-
         val viewPager : ViewPager2 = mViewDataBinding.mainViewPager
-        val viewPagerIndicatorContainer : LinearLayout = mViewDataBinding.mainViewPagerRubberIndicatorContainer
-        val viewPagerRubberIndicator : RubberIndicator = mViewDataBinding.mainViewPagerRubberIndicator
+        viewPager.adapter = MainFragmentStateAdapter(this)
+        val indicator : CircleIndicator3 = mViewDataBinding.mainViewPagerIndicator
+        indicator.setViewPager(viewPager)
 
         val alphaAnimDelayMills = 1500L
-        val alphaDisappearAnim = AnimationUtils.loadAnimation(this, R.anim.anim_alpha_disappear)
-        alphaDisappearAnim.setAnimationListener(object : Animation.AnimationListener{
+        val alphaDisappearAnim = AnimationUtils.loadAnimation(this@MainActivity, R.anim.anim_alpha_disappear)
+        alphaDisappearAnim.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationRepeat(p0: Animation?) {}
             override fun onAnimationEnd(p0: Animation?) {
-                viewPagerIndicatorContainer.visibility = View.INVISIBLE
+                mMainViewModel.mIsViewChanging.set(false)
             }
             override fun onAnimationStart(p0: Animation?) {}
         })
-        viewPagerRubberIndicator.setCount(MainFragmentState.getCount())
-        viewPager.adapter = MainFragmentStateAdapter(this)
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                mMainViewModel.mIsViewChanging.set(true)
+                indicator.animation = null
+                mAlphaAnimationHandler.removeCallbacksAndMessages(null)
+                mAlphaAnimationHandler.postDelayed({
+                    indicator.startAnimation(alphaDisappearAnim)
+                }, alphaAnimDelayMills)
+            }
+
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-
-                if(currentPageState.ordinal != position) {
-                    viewPagerIndicatorContainer.visibility = View.VISIBLE
-                    viewPagerIndicatorContainer.animation = null
-                    mAlphaAnimationHandler.removeCallbacksAndMessages(null)
-
-                    if(currentPageState.ordinal > position) viewPagerRubberIndicator.moveToLeft()
-                    else viewPagerRubberIndicator.moveToRight()
-
-                    onFragmentChanged(currentPageState, MainFragmentState.getState(position))
-
-                    currentPageState = MainFragmentState.getState(position)
-
-                    mAlphaAnimationHandler.postDelayed({
-                        viewPagerIndicatorContainer.startAnimation(alphaDisappearAnim)
-                    }, alphaAnimDelayMills)
-                }
+                val newFragmentState = MainFragmentState.getState(position)
+                onFragmentChanged(currentPageState, newFragmentState)
+                currentPageState = newFragmentState
             }
         })
+
     }
 
     private fun onFragmentChanged(prevFragmentState: MainFragmentState, newFragmentState: MainFragmentState) {
@@ -129,6 +122,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         sendBroadcast(unSelectedIntent)
 
     }
+
 
 
 }

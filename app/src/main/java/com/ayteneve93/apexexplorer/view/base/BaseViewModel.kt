@@ -11,7 +11,6 @@ abstract class BaseViewModel<N>(application : Application) : AndroidViewModel(ap
 
     private var mNavigator : WeakReference<N>? = null
     private val mCompositeDisposable = CompositeDisposable()
-    val mIsOnProgress = ObservableField<Boolean>(false)
 
     override fun onCleared() {
         mCompositeDisposable.dispose()

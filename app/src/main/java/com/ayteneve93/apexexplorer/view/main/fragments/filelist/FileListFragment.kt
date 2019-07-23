@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Handler
+import android.util.Log
 import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +23,7 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
     val mFileListRecyclerAdapter : FileListRecyclerAdapter by inject()
     var mCurrentPath : String = ""
 
+
     private val mFileListBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context : Context?, intent : Intent?) {
             when(intent?.action) {
@@ -30,12 +33,14 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
                 }
                 MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED -> {
                     if(intent.getStringExtra(MainBroadcastPreference.MainToFragment.Who.KEY) == MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST) {
+                        mViewDataBinding.fragmentFileListRefresh.isRefreshing = false
                     }
                 }
                 null -> return
             }
         }
     }
+
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_file_list
@@ -49,12 +54,16 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
         return mFileListViewModel
     }
 
+
     override fun setUp() {
         setBroadcastReceiver()
         setFilesRecyclerAdapter()
         setFilesRefreshLayout()
         refresh()
+
+
     }
+
 
     private fun setBroadcastReceiver() {
         val fileListIntentFilter = IntentFilter()
@@ -83,10 +92,15 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
         mCurrentPath = path
         if(!mViewDataBinding.fragmentFileListRefresh.isRefreshing) mViewDataBinding.fragmentFileListRefresh.isRefreshing = true
         mFileListRecyclerAdapter.refresh(mCurrentPath)
+        Handler().postDelayed({
+            mViewDataBinding.fragmentFileListRefresh.isRefreshing = false
+        }, 3000)
     }
 
     companion object {
         fun newInstance() = FileListFragment()
+        var tmp = false
     }
+
 
 }

@@ -33,15 +33,11 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     override fun getBindingVariable(): Int { return BR.viewModel }
 
     override fun setUp() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
-        /*
         mEntryViewModel.mIsAppLoading.set(true)
-        mAppTitleModelManager.getUserAccountInfoModel().isAuthenticated.let {
+        mUserAccountInfoModelManager.getUserAccountInfoModel().isAuthenticated.let {
             if(it == null || !it) showTitleAnimation()
             else toMainActivity(false)
         }
-        */
     }
 
     private fun showTitleAnimation() {

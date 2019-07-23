@@ -3,8 +3,7 @@
           xmlns:dist="http://schemas.android.com/apk/distribution"
           package="com.ayteneve93.apexexplorer">
 
-    <dist:module dist:instant="true"/>
-
+    <dist:module dist:instant="true"/> <!-- 외부 저장소 읽기 및 쓰기 권한 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
@@ -16,24 +15,27 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".prompt.PromptActivity"
-                  android:noHistory="true"
-                  android:screenOrientation="portrait"
-                  android:theme="@style/Theme.Transparent">
+        <activity
+                android:name=".prompt.PromptActivity"
+                android:noHistory="true"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.Transparent">
         </activity>
         <activity
                 android:name=".view.entry.EntryActivity"
-                android:screenOrientation="portrait"
-                android:noHistory="true">
+                android:noHistory="true"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <!-- ToDo : 추후 Instance App 실행을 위한 액션 필터 정의해야 함 -->
+                <!-- ToDo : 추후 Instance App 실행을 위한 필터 정의해야 함 -->
                 <action android:name="android.intent.action.VIEW"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
-                android:name=".view.main.MainActivity">
+                android:name=".view.main.MainActivity"
+                android:configChanges="orientation|screenSize">
         </activity>
     </application>
 
