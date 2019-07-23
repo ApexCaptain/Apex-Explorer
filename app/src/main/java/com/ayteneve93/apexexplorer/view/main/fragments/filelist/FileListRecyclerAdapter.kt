@@ -1,16 +1,17 @@
 package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ayteneve93.apexexplorer.R
-import com.ayteneve93.apexexplorer.data.DataModelManager
 import com.ayteneve93.apexexplorer.data.FileModel
+import com.ayteneve93.apexexplorer.data.managers.FileModelManager
 import com.ayteneve93.apexexplorer.databinding.ItemFileListBinding
 
-class FileListRecyclerAdapter(private val mDataModelManager: DataModelManager) : RecyclerView.Adapter<FileListRecyclerAdapter.FileListViewHolder>() {
+class FileListRecyclerAdapter(private val mFileModelManager: FileModelManager) : RecyclerView.Adapter<FileListRecyclerAdapter.FileListViewHolder>() {
 
     private val mFileList : ArrayList<FileModel> = ArrayList()
 
@@ -21,16 +22,18 @@ class FileListRecyclerAdapter(private val mDataModelManager: DataModelManager) :
         holder.apply {
             bind(eachFileModel)
             itemView.tag = eachFileModel
-            /*
-            itemView.setOnClickListener {
-
-            }
-            */
         }
     }
 
-    fun test() {
-        notifyDataSetChanged()
+    fun refresh(path : String = "") {
+        mFileModelManager.scanFileListFrom(path) {
+            isSucceed, fileModelList ->
+            if(isSucceed) {
+                mFileList.clear()
+                mFileList.addAll(fileModelList as Collection<FileModel>)
+                notifyDataSetChanged()
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileListViewHolder {

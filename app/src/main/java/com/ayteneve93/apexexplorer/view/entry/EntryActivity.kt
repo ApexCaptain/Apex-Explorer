@@ -1,15 +1,14 @@
 package com.ayteneve93.apexexplorer.view.entry
 
 import android.content.Intent
-import android.hardware.biometrics.BiometricManager
 import android.os.Handler
-import android.util.Log
 import android.widget.Toast
 import androidx.biometric.BiometricConstants
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ayteneve93.apexexplorer.BR
 import com.ayteneve93.apexexplorer.R
-import com.ayteneve93.apexexplorer.data.DataModelManager
+import com.ayteneve93.apexexplorer.data.managers.AppTitleModelManager
+import com.ayteneve93.apexexplorer.data.managers.UserAccountInfoModelManager
 import com.ayteneve93.apexexplorer.databinding.ActivityEntryBinding
 import com.ayteneve93.apexexplorer.prompt.BiometricAuthPrompt.BiometricAuthManager
 import com.ayteneve93.apexexplorer.prompt.FireBaseAuthPrompt.FireBaseAuthManager
@@ -25,7 +24,8 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     private val mEntryViewModel : EntryViewModel by viewModel()
     val mFireBaseAuthManager : FireBaseAuthManager by inject()
     val mBiometricManager : BiometricAuthManager by inject()
-    val mDataModelManager : DataModelManager by inject()
+    val mAppTitleModelManager : AppTitleModelManager by inject()
+    val mUserAccountInfoModelManager : UserAccountInfoModelManager by inject()
     val mApplicationPreference : ApplicationPreference by inject()
 
     override fun getLayoutId(): Int { return R.layout.activity_entry }
@@ -33,16 +33,20 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     override fun getBindingVariable(): Int { return BR.viewModel }
 
     override fun setUp() {
-        mEntryViewModel.mIsOnProgress.set(true)
-        mDataModelManager.getUserAccountInfoModel().isAuthenticated.let {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+        /*
+        mEntryViewModel.mIsAppLoading.set(true)
+        mAppTitleModelManager.getUserAccountInfoModel().isAuthenticated.let {
             if(it == null || !it) showTitleAnimation()
             else toMainActivity(false)
         }
+        */
     }
 
     private fun showTitleAnimation() {
         mViewDataBinding.appTitleView.adapter = AppTitleRecyclerAdapter(
-            this, mDataModelManager.getAppTitleModel(this))
+            this, mAppTitleModelManager.getAppTitleModel())
             .onRecyclerStartUpAnimEnd {
                 runFireBaseAuthenticate()
             }
@@ -50,13 +54,13 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     }
 
     private fun runFireBaseAuthenticate() {
-        mEntryViewModel.mIsOnProgress.set(true)
+        mEntryViewModel.mIsAppLoading.set(true)
         mFireBaseAuthManager.requestGoogleFireBaseAuthentication(this) {
             isSucceed, account ->
-            mEntryViewModel.mIsOnProgress.set(false)
+            mEntryViewModel.mIsAppLoading.set(false)
             account?.let {
                 if(isSucceed) {
-                    mDataModelManager.setUserAccountInfoModel(it)
+                    mUserAccountInfoModelManager.setUserAccountInfoModel(it)
                     checkToRunBiometricAuthenticate()
                     return@requestGoogleFireBaseAuthentication
                 }
@@ -129,11 +133,12 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
         }
     }
 
-    // 성공 메시지 날려야 함
     private fun toMainActivity(showWelcomeText : Boolean = true) {
-        mDataModelManager.getUserAccountInfoModel().isAuthenticated = true
-        if(showWelcomeText) Toast.makeText(this, getString(R.string.tst_auth_succeed, mDataModelManager.getUserAccountInfoModel().name), Toast.LENGTH_LONG).show()
+        // 유저 정보는 앱 전체에서 공용으로 사용하니 Intent 대신 Data Model 로 관리
+        mUserAccountInfoModelManager.getUserAccountInfoModel().isAuthenticated = true
+        if(showWelcomeText) Toast.makeText(this, getString(R.string.tst_auth_succeed, mUserAccountInfoModelManager.getUserAccountInfoModel().name), Toast.LENGTH_LONG).show()
         startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
 }

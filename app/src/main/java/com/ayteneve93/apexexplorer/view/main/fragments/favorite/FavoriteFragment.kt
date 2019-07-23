@@ -22,12 +22,10 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
             when(intent?.action) {
                 MainBroadcastPreference.MainToFragment.Action.FRAGMENT_SELECTED -> {
                     if(intent.getStringExtra(MainBroadcastPreference.MainToFragment.Who.KEY) == MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE) {
-                        Log.d("ayteneve93_test", "favorite selected")
                     }
                 }
                 MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED -> {
                     if(intent.getStringExtra(MainBroadcastPreference.MainToFragment.Who.KEY) == MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE) {
-                        Log.d("ayteneve93_test", "favorite unselected")
                     }
                 }
                 null -> return
