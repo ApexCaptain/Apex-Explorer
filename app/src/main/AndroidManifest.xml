@@ -24,7 +24,8 @@
                 android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
+                <!-- ToDo : 추후 Instance App 실행을 위한 액션 필터 정의해야 함 -->
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>

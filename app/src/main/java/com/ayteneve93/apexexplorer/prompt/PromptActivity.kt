@@ -72,7 +72,7 @@ class PromptActivity : FragmentActivity() {
                 }, object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
-                        mBiometricAuthManager.onRequestFingerprintAuthentication(false, errorCode, errString.toString())
+                        mBiometricAuthManager.onRequestFingerprintAuthentication(false, errorCode)
                         finish()
                     }
 

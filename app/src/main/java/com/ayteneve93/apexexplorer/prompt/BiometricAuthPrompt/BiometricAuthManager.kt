@@ -14,8 +14,8 @@ import java.lang.Exception
 
 class BiometricAuthManager {
 
-    private var onAuthenticationResult : ((Boolean, Int?, String?) -> Unit)? = null
-    fun requestFingerprintAuthentication(sourceActivity : AppCompatActivity, onAuthenticationResult : (isSucceed : Boolean, errCode : Int?, errString : String?) -> Unit) {
+    private var onAuthenticationResult : ((Boolean, Int?) -> Unit)? = null
+    fun requestFingerprintAuthentication(sourceActivity : AppCompatActivity, onAuthenticationResult : (isSucceed : Boolean, errCode : Int?) -> Unit) {
         val requestFingerprintAuthenticationIntent = Intent(sourceActivity, PromptActivity::class.java)
             .setAction(PromptIntentAction.BIOMETRIC)
             .putExtra(BiometricAuthIntentPreference.RequestDomain.KEY, BiometricAuthIntentPreference.RequestDomain.Values.FINGERPRINT)
@@ -41,9 +41,9 @@ class BiometricAuthManager {
         }
     }
 
-    fun onRequestFingerprintAuthentication(isSucceed : Boolean, errCode : Int? = null, errString : String? = null) {
+    fun onRequestFingerprintAuthentication(isSucceed : Boolean, errCode : Int? = null) {
         onAuthenticationResult?.let {
-            it(isSucceed, errCode, errString)
+            it(isSucceed, errCode)
         }
     }
 
