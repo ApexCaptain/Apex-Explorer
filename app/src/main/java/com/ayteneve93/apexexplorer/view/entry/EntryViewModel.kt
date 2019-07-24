@@ -6,6 +6,6 @@ import com.ayteneve93.apexexplorer.view.base.BaseViewModel
 
 class EntryViewModel(
     application: Application
-) : BaseViewModel<Any>(application) {
+) : BaseViewModel(application) {
     val mIsAppLoading = ObservableField(false)
 }

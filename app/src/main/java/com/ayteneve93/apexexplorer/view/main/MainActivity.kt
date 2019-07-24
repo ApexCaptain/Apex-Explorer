@@ -6,20 +6,24 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.databinding.library.baseAdapters.BR
 import androidx.viewpager2.widget.ViewPager2
 import com.ayteneve93.apexexplorer.R
+import com.ayteneve93.apexexplorer.data.managers.UserAccountInfoModelManager
 import com.ayteneve93.apexexplorer.databinding.ActivityMainBinding
 import com.ayteneve93.apexexplorer.view.base.BaseActivity
 import me.relex.circleindicator.CircleIndicator3
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     private val mMainViewModel: MainViewModel by viewModel()
     private val mAlphaAnimationHandler = Handler(Looper.getMainLooper())
+    private val mUserAccountInfoModelManager : UserAccountInfoModelManager by inject()
 
     private val mMainBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -31,7 +35,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun getLayoutId(): Int { return R.layout.activity_main }
     override fun getViewModel(): MainViewModel {
-        mMainViewModel.setNavigator(this)
         return mMainViewModel
     }
     override fun getBindingVariable(): Int { return BR.viewModel }
@@ -44,15 +47,13 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     private fun setBroadcastReceiver() {
         val mainIntentFilter = IntentFilter()
-        //mainIntentFilter.addAction("stop")
-        //mainIntentFilter.addAction("continue")
-            // 인텐트 필터에 액션 추가해야 함 (현재 정해진 사항 없음)
         registerReceiver(mMainBroadcastReceiver, mainIntentFilter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(mMainBroadcastReceiver)
+        mUserAccountInfoModelManager.getUserAccountInfoModel().isAuthenticated = false
     }
 
     private var currentPageState : MainFragmentState = MainFragmentState.FILE_LIST

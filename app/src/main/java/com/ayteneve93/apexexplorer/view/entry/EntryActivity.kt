@@ -12,7 +12,7 @@ import com.ayteneve93.apexexplorer.data.managers.UserAccountInfoModelManager
 import com.ayteneve93.apexexplorer.databinding.ActivityEntryBinding
 import com.ayteneve93.apexexplorer.prompt.BiometricAuthPrompt.BiometricAuthManager
 import com.ayteneve93.apexexplorer.prompt.FireBaseAuthPrompt.FireBaseAuthManager
-import com.ayteneve93.apexexplorer.utils.ApplicationPreference
+import com.ayteneve93.apexexplorer.utils.PreferenceUtils
 import com.ayteneve93.apexexplorer.utils.PreferenceCategory
 import com.ayteneve93.apexexplorer.view.base.BaseActivity
 import com.ayteneve93.apexexplorer.view.main.MainActivity
@@ -26,18 +26,21 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
     val mBiometricManager : BiometricAuthManager by inject()
     val mAppTitleModelManager : AppTitleModelManager by inject()
     val mUserAccountInfoModelManager : UserAccountInfoModelManager by inject()
-    val mApplicationPreference : ApplicationPreference by inject()
+    val mPreferenceUtils : PreferenceUtils by inject()
 
     override fun getLayoutId(): Int { return R.layout.activity_entry }
     override fun getViewModel(): EntryViewModel { return mEntryViewModel }
     override fun getBindingVariable(): Int { return BR.viewModel }
 
     override fun setUp() {
-        mEntryViewModel.mIsAppLoading.set(true)
-        mUserAccountInfoModelManager.getUserAccountInfoModel().isAuthenticated.let {
-            if(it == null || !it) showTitleAnimation()
-            else toMainActivity(false)
+        mUserAccountInfoModelManager.getUserAccountInfoModel().isAuthenticated?.let {
+            if(it) {
+                toMainActivity(false)
+                return@setUp
+            }
         }
+        mEntryViewModel.mIsAppLoading.set(true)
+        showTitleAnimation()
     }
 
     private fun showTitleAnimation() {
@@ -68,13 +71,13 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
 
     private fun checkToRunBiometricAuthenticate() {
         if(mBiometricManager.checkIsFingerprintAuthenticationAvailable(this)) {
-            if(mApplicationPreference.getBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, false)) runBiometricAuthenticate()
+            if(mPreferenceUtils.getBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, false)) runBiometricAuthenticate()
             else {
-                if(mApplicationPreference.getBooleanUserPreference(PreferenceCategory.User.SET_NOT_TO_ASK_ACTIVATE_FINGERPRINT_AUTHENTICATION, false)) toMainActivity()
+                if(mPreferenceUtils.getBooleanUserPreference(PreferenceCategory.User.SET_NOT_TO_ASK_ACTIVATE_FINGERPRINT_AUTHENTICATION, false)) toMainActivity()
                 else {
                     AskToUseBiometricAuthDialog(this){
                         useFingerprint, doNotAskToUseFingerprintAgain ->
-                        mApplicationPreference.setBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, useFingerprint)
+                        mPreferenceUtils.setBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, useFingerprint)
                             .setBooleanUserPreference(PreferenceCategory.User.SET_NOT_TO_ASK_ACTIVATE_FINGERPRINT_AUTHENTICATION, doNotAskToUseFingerprintAgain)
                         if(useFingerprint) runBiometricAuthenticate()
                         else toMainActivity()
@@ -120,7 +123,7 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
                         // H/W 혹은 S/W 적인 이유로 지문인식 실행 자체가 불가능한 경우. 이 때는 지문인식 기능을 비활성화 하고
                         // 바로 다음 액티비티로 넘어감. 단 로그인 성공시 메시지는 출력하지 않음
                         Toast.makeText(this, R.string.tst_fingerprint_unavailable, Toast.LENGTH_LONG).show()
-                        mApplicationPreference.setBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, false)
+                        mPreferenceUtils.setBooleanUserPreference(PreferenceCategory.User.USE_FINGERPRINT_AUTHENTICATION, false)
                             .setBooleanUserPreference(PreferenceCategory.User.SET_NOT_TO_ASK_ACTIVATE_FINGERPRINT_AUTHENTICATION, true)
                         toMainActivity(false)
                     }
@@ -134,7 +137,7 @@ class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
         mUserAccountInfoModelManager.getUserAccountInfoModel().isAuthenticated = true
         if(showWelcomeText) Toast.makeText(this, getString(R.string.tst_auth_succeed, mUserAccountInfoModelManager.getUserAccountInfoModel().name), Toast.LENGTH_LONG).show()
         startActivity(Intent(this, MainActivity::class.java))
-        finish()
+        Handler().postDelayed({ finish() }, 3000)
     }
 
 }

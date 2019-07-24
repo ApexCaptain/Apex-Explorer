@@ -11,7 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 
-abstract class BaseFragment<T: ViewDataBinding, V: BaseViewModel<*>> : Fragment() {
+abstract class BaseFragment<T: ViewDataBinding, V: BaseViewModel> : Fragment() {
 
     protected lateinit var mViewDataBinding: T
     protected var mActivity: BaseActivity<*, *>? = null

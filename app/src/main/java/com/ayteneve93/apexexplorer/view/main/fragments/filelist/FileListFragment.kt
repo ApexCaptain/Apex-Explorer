@@ -4,14 +4,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Handler
+import android.net.Uri
 import android.util.Log
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.databinding.library.baseAdapters.BR
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.ayteneve93.apexexplorer.R
+import com.ayteneve93.apexexplorer.data.FileModel
 import com.ayteneve93.apexexplorer.databinding.FragmentFileListBinding
+import com.ayteneve93.apexexplorer.utils.PreferenceCategory
+import com.ayteneve93.apexexplorer.utils.PreferenceUtils
 import com.ayteneve93.apexexplorer.view.base.BaseFragment
 import com.ayteneve93.apexexplorer.view.main.MainBroadcastPreference
 import org.koin.android.ext.android.inject
@@ -21,7 +28,8 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
 
     private val mFileListViewModel : FileListViewModel by viewModel()
     val mFileListRecyclerAdapter : FileListRecyclerAdapter by inject()
-    var mCurrentPath : String = ""
+    val mPreferenceUtils : PreferenceUtils by inject()
+    private var mCurrentPath : String? = mPreferenceUtils.getStringUserPreference(PreferenceCategory.User.LAST_VIEWED_FOLDER_NAME, null)
 
 
     private val mFileListBroadcastReceiver = object : BroadcastReceiver() {
@@ -59,9 +67,7 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
         setBroadcastReceiver()
         setFilesRecyclerAdapter()
         setFilesRefreshLayout()
-        refresh()
-
-
+        refreshFileListStepTwo(mCurrentPath)
     }
 
 
@@ -78,28 +84,63 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
     }
 
     private fun setFilesRecyclerAdapter() {
-        mViewDataBinding.fragmentFileListRecyclerView.adapter = mFileListRecyclerAdapter
-        mViewDataBinding.fragmentFileListRecyclerView.layoutManager = LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false)
+        val recyclerView : RecyclerView = mViewDataBinding.fragmentFileListRecyclerView
+        recyclerView.adapter = mFileListRecyclerAdapter.setFileClickedListener { onNewFileModelSelected(it) }
+        recyclerView.layoutManager = LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false)
+        recyclerView.addItemDecoration(DividerItemDecoration(recyclerView.context, DividerItemDecoration.VERTICAL))
     }
 
     private fun setFilesRefreshLayout() {
         mViewDataBinding.fragmentFileListRefresh.setOnRefreshListener {
-            refresh(mCurrentPath)
+            refreshFileListStepOne(mCurrentPath)
         }
     }
 
-    private fun refresh(path : String = "") {
+    private val alphaAnimDuration = 300L
+    private fun refreshFileListStepOne(path : String?, useRefresh : Boolean = true) {
+        val alphaDisappearAnim = AnimationUtils.loadAnimation(mActivity, R.anim.anim_alpha_disappear)
+        alphaDisappearAnim.duration = alphaAnimDuration
+        alphaDisappearAnim.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {}
+            override fun onAnimationEnd(animation: Animation?) {
+                mFileListViewModel.mShouldRecyclerViewInvisible.set(true)
+                refreshFileListStepTwo(path, useRefresh)
+            }
+            override fun onAnimationStart(animation: Animation?) {
+                if(!mViewDataBinding.fragmentFileListRefresh.isRefreshing
+                    && useRefresh)
+                    mViewDataBinding.fragmentFileListRefresh.isRefreshing = true
+            }
+        })
+        mViewDataBinding.fragmentFileListRecyclerView.startAnimation(alphaDisappearAnim)
+    }
+
+    private fun refreshFileListStepTwo(path : String?, useRefresh: Boolean = true) {
+        val alphaAppearAnim = AnimationUtils.loadAnimation(mActivity, R.anim.anim_alpha_appear)
+        alphaAppearAnim.duration = alphaAnimDuration
         mCurrentPath = path
-        if(!mViewDataBinding.fragmentFileListRefresh.isRefreshing) mViewDataBinding.fragmentFileListRefresh.isRefreshing = true
-        mFileListRecyclerAdapter.refresh(mCurrentPath)
-        Handler().postDelayed({
+        if(!mViewDataBinding.fragmentFileListRefresh.isRefreshing && useRefresh) mViewDataBinding.fragmentFileListRefresh.isRefreshing = true
+        mFileListRecyclerAdapter.refresh(mCurrentPath) {
+            isSucceed, isEmpty ->
+            mFileListViewModel.mShouldRecyclerViewInvisible.set(false)
+            mViewDataBinding.fragmentFileListRecyclerView.startAnimation(alphaAppearAnim)
             mViewDataBinding.fragmentFileListRefresh.isRefreshing = false
-        }, 3000)
+            mFileListViewModel.mIsEmptyDirectory.set(isEmpty)
+        }
+    }
+
+    private fun onNewFileModelSelected(fileModel : FileModel) {
+        if(fileModel.isDirectory)
+            refreshFileListStepOne(fileModel.canonicalPath, false)
+        else {
+            val intent = Intent().setAction(Intent.ACTION_VIEW)
+            intent.setDataAndType(Uri.parse("file://${fileModel.canonicalPath}"), "/")
+            startActivity(intent)
+        }
     }
 
     companion object {
         fun newInstance() = FileListFragment()
-        var tmp = false
     }
 
 

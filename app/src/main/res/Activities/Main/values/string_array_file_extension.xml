@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="file_extensions_case_compressed">
+        <item>zip</item>
+        <item>alz</item>
+        <item>rar</item>
+
+    </string-array>
+
+    <string-array name="file_extensions_case_document">
+        <item>doc</item>
+        <item>hwp</item>
+        <item>txt</item>
+        <item>html</item>
+    </string-array>
+
+    <string-array name="file_extensions_case_excel">
+        <item>xls</item>
+    </string-array>
+
+    <string-array name="file_extensions_case_image">
+        <item>bmp</item>
+        <item>gif</item>
+        <item>jpg</item>
+        <item>png</item>
+        <item>raw</item>
+        <item>tiff</item>
+    </string-array>
+
+    <string-array name="file_extensions_case_music">
+        <item>wav</item>
+        <item>wma</item>
+        <item>mp3</item>
+    </string-array>
+
+    <string-array name="file_extensions_case_pdf">
+        <item>pdf</item>
+    </string-array>
+
+    <string-array name="file_extensions_case_video">
+        <item>mp4</item>
+        <item>mkv</item>
+        <item>avi</item>
+        <item>flv</item>
+        <item>mov</item>
+    </string-array>
+
+    <string name="file_extensions_case_directory">
+        Directory
+    </string>
+
+
+</resources>

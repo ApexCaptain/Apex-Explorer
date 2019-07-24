@@ -1,6 +1,6 @@
 package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 
-import android.content.Context
+import android.app.Application
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,28 +11,55 @@ import com.ayteneve93.apexexplorer.data.FileModel
 import com.ayteneve93.apexexplorer.data.managers.FileModelManager
 import com.ayteneve93.apexexplorer.databinding.ItemFileListBinding
 
-class FileListRecyclerAdapter(private val mFileModelManager: FileModelManager) : RecyclerView.Adapter<FileListRecyclerAdapter.FileListViewHolder>() {
+class FileListRecyclerAdapter(private val mFileModelManager: FileModelManager, private val application: Application) : RecyclerView.Adapter<FileListRecyclerAdapter.FileListViewHolder>() {
 
-    private val mFileList : ArrayList<FileModel> = ArrayList()
+    private val mFileViewModelList : ArrayList<FileViewModel> = ArrayList()
 
-    override fun getItemCount(): Int = mFileList.size
+    override fun getItemCount(): Int = mFileViewModelList.size
 
     override fun onBindViewHolder(holder: FileListViewHolder, position: Int) {
-        val eachFileModel = mFileList[position]
+        val eachFileViewModel = mFileViewModelList[position]
         holder.apply {
-            bind(eachFileModel)
-            itemView.tag = eachFileModel
+            bind(eachFileViewModel)
+            itemView.tag = eachFileViewModel
         }
     }
 
-    fun refresh(path : String = "") {
+    private var fileClickedListener : ((fileModel : FileModel) -> Unit)? = null
+    fun setFileClickedListener(fileClickedListener : (fileModel : FileModel) -> Unit) : FileListRecyclerAdapter {
+        this.fileClickedListener = fileClickedListener
+        return this
+    }
+
+    fun refresh(path : String?, onRefreshFinished : (isSucceed : Boolean, isEmpty : Boolean) -> Unit) {
         mFileModelManager.scanFileListFrom(path) {
             isSucceed, fileModelList ->
             if(isSucceed) {
-                mFileList.clear()
-                mFileList.addAll(fileModelList as Collection<FileModel>)
+                mFileViewModelList.clear()
+
+                fileModelList?.sortWith(compareBy { it.iconResId } )
+
+                fileModelList?.forEach {
+                    eachFileViewModel ->
+                    mFileViewModelList.add(FileViewModel(application).apply {
+                        mFileModel = eachFileViewModel
+                        mSubTitle = if(eachFileViewModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
+                            else "${kotlin.math.round(eachFileViewModel.size!! * 100) / 100} ${eachFileViewModel.sizeUnit}"
+                        onItemClickListener = {
+                            fileClickedListener?.let {
+                                it(mFileModel)
+                            }
+                        }
+                        onItemLongClickListener = {
+                            view ->
+                            Log.d("ayteneve93_test", "long clicked ${eachFileViewModel.canonicalPath}")
+                            false
+                        }
+                    })
+                }
                 notifyDataSetChanged()
-            }
+                onRefreshFinished(true, fileModelList?.size == 0)
+            } else onRefreshFinished(false, true)
         }
     }
 
@@ -47,9 +74,9 @@ class FileListRecyclerAdapter(private val mFileModelManager: FileModelManager) :
     class FileListViewHolder(
         private val binding : ItemFileListBinding
     ) : RecyclerView.ViewHolder(binding.root){
-        fun bind(item : FileModel) {
+        fun bind(item : FileViewModel) {
             binding.apply {
-                dataModel = item
+                viewModel = item
             }
         }
     }

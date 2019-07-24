@@ -6,6 +6,6 @@ import com.ayteneve93.apexexplorer.view.base.BaseViewModel
 
 class MainViewModel(
     application : Application
-) : BaseViewModel<Any>(application) {
+) : BaseViewModel(application) {
     val mIsViewChanging = ObservableField(false)
 }

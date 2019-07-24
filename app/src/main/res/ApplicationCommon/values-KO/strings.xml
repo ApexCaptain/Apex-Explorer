@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name = "permission_external_storage_rational_message">
-        This application needs storage permission to access
+        파일을 보기 위해서는 저장소 권한이 필요합니다.
     </string>
     <string name= "permission_external_storage_denied_message">
-        Permission denied. You can grant it later in
-        \n[Setting] -> [Permission] tab
+        권한 설정이 거부되었습니다.
+        \n[설정] -> [권한] 탭에서 다시 설정하실 수 있습니다.
     </string>
 
     <string name ="directory_no_content">
-        Empty Directory
+        비어있는 폴더입니다
     </string>
 </resources>
