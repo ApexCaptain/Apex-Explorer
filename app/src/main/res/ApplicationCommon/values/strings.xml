@@ -11,4 +11,10 @@
     <string name ="directory_no_content">
         Empty Directory
     </string>
+
+    <string name="unsupported_file_extension">
+        Unsupported File Extension
+    </string>
+
+
 </resources>

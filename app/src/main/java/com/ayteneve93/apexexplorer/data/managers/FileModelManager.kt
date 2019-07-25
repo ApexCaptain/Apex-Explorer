@@ -1,8 +1,11 @@
 package com.ayteneve93.apexexplorer.data.managers
 
 import android.app.Application
+import android.content.Intent
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.application.SuppressWarningAttributes
 import com.ayteneve93.apexexplorer.data.FileModel
@@ -14,7 +17,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class FileModelManager(private val application : Application) {
-    @Suppress(SuppressWarningAttributes.SPELL_CHECKING_INSPECTION)
     fun scanFileListFrom(path : String?, onScanResult : (isSucceed : Boolean, fileModelList : ArrayList<FileModel>?) -> Unit) {
         TedPermission.with(application)
             .setPermissionListener(object : PermissionListener {
@@ -56,12 +58,28 @@ class FileModelManager(private val application : Application) {
             .check()
     }
 
+    fun generateViewIntentFromModel(fileModel : FileModel) : Intent? {
+        val fileViewIntent = Intent(Intent.ACTION_VIEW)
+        val type : String? = when (fileModel.extension) {
+            in application.resources.getStringArray(R.array.file_extensions_case_compressed) -> "application/zip"
+            in application.resources.getStringArray(R.array.file_extensions_case_text) -> "text/*"
+            in application.resources.getStringArray(R.array.file_extensions_case_excel) -> "application/*"
+            in application.resources.getStringArray(R.array.file_extensions_case_image) -> "image/*"
+            in application.resources.getStringArray(R.array.file_extensions_case_music) -> "audio/*"
+            in application.resources.getStringArray(R.array.file_extensions_case_pdf) -> "application/*"
+            in application.resources.getStringArray(R.array.file_extensions_case_video) -> "video/*"
+            else -> return null
+        }
+        fileViewIntent.setDataAndType(Uri.parse(fileModel.canonicalPath), type)
+        return fileViewIntent
+    }
+
     private fun getFileIconResId(file : File) : Int {
         return if(file.isDirectory) R.drawable.ic_file_directory
         else {
             when(file.extension) {
                 in application.resources.getStringArray(R.array.file_extensions_case_compressed) -> R.drawable.ic_file_compressed
-                in application.resources.getStringArray(R.array.file_extensions_case_document) -> R.drawable.ic_file_document
+                in application.resources.getStringArray(R.array.file_extensions_case_text) -> R.drawable.ic_file_document
                 in application.resources.getStringArray(R.array.file_extensions_case_excel) -> R.drawable.ic_file_excel
                 in application.resources.getStringArray(R.array.file_extensions_case_image) -> R.drawable.ic_file_image
                 in application.resources.getStringArray(R.array.file_extensions_case_music) -> R.drawable.ic_file_music
@@ -71,7 +89,6 @@ class FileModelManager(private val application : Application) {
             }
         }
     }
-
 
     private fun setFileSizeAndUnit(file : File, fileModel : FileModel) {
         val splitUnit = 1024
@@ -93,4 +110,5 @@ class FileModelManager(private val application : Application) {
     private fun getIsFavorite(file : File) : Boolean {
         return false
     }
+
 }

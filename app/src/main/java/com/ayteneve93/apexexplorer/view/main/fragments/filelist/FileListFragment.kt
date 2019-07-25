@@ -1,14 +1,10 @@
 package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.net.Uri
-import android.util.Log
-import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.data.FileModel
+import com.ayteneve93.apexexplorer.data.managers.FileModelManager
 import com.ayteneve93.apexexplorer.databinding.FragmentFileListBinding
 import com.ayteneve93.apexexplorer.utils.PreferenceCategory
 import com.ayteneve93.apexexplorer.utils.PreferenceUtils
@@ -29,6 +26,7 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
     private val mFileListViewModel : FileListViewModel by viewModel()
     val mFileListRecyclerAdapter : FileListRecyclerAdapter by inject()
     val mPreferenceUtils : PreferenceUtils by inject()
+    val mFileModelManager : FileModelManager by inject()
     private var mCurrentPath : String? = mPreferenceUtils.getStringUserPreference(PreferenceCategory.User.LAST_VIEWED_FOLDER_NAME, null)
 
 
@@ -133,9 +131,13 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
         if(fileModel.isDirectory)
             refreshFileListStepOne(fileModel.canonicalPath, false)
         else {
-            val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse("file://${fileModel.canonicalPath}"), "/")
-            startActivity(intent)
+            val fileViewIntent = mFileModelManager.generateViewIntentFromModel(fileModel)
+            if(fileViewIntent == null) Toast.makeText(mActivity, R.string.unsupported_file_extension, Toast.LENGTH_LONG).show()
+            else try {
+                startActivity(fileViewIntent)
+            } catch (exception : ActivityNotFoundException) {
+                Toast.makeText(mActivity, R.string.unsupported_file_extension, Toast.LENGTH_LONG).show()
+            }
         }
     }
 

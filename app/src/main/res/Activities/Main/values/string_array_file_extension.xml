@@ -3,34 +3,54 @@
 
     <string-array name="file_extensions_case_compressed">
         <item>zip</item>
-        <item>alz</item>
-        <item>rar</item>
 
     </string-array>
 
-    <string-array name="file_extensions_case_document">
-        <item>doc</item>
-        <item>hwp</item>
-        <item>txt</item>
+    <string-array name="file_extensions_case_text">
+        <item>css</item>
         <item>html</item>
+        <item>htm</item>
+        <item>txt</item>
+        <item>rtx</item>
+        <item>tsv</item>
+        <item>xml</item>
+        <item>etx</item>
+        <item>xsl</item>
     </string-array>
 
     <string-array name="file_extensions_case_excel">
         <item>xls</item>
+        <item>xlsx</item>
+        <item>xlsm</item>
     </string-array>
 
     <string-array name="file_extensions_case_image">
-        <item>bmp</item>
-        <item>gif</item>
-        <item>jpg</item>
         <item>png</item>
-        <item>raw</item>
+        <item>gif</item>
+        <item>ief</item>
+        <item>jpeg</item>
+        <item>jpg</item>
+        <item>jpe</item>
         <item>tiff</item>
+        <item>tif</item>
+        <item>ras</item>
+        <item>pnm</item>
+        <item>pbm</item>
+        <item>pgm</item>
+        <item>ppm</item>
+        <item>rgb</item>
+        <item>xbm</item>
+        <item>xpm</item>
+        <item>xwd</item>
     </string-array>
 
     <string-array name="file_extensions_case_music">
+        <item>au</item>
+        <item>snd</item>
+        <item>aif</item>
+        <item>aiff</item>
+        <item>aifc</item>
         <item>wav</item>
-        <item>wma</item>
         <item>mp3</item>
     </string-array>
 
@@ -39,11 +59,16 @@
     </string-array>
 
     <string-array name="file_extensions_case_video">
+        <item>mpeg</item>
+        <item>mpg</item>
+        <item>mpe</item>
+        <item>qt</item>
         <item>mp4</item>
         <item>mkv</item>
         <item>avi</item>
         <item>flv</item>
         <item>mov</item>
+        <item>movie</item>
     </string-array>
 
     <string name="file_extensions_case_directory">

@@ -56,6 +56,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         mUserAccountInfoModelManager.getUserAccountInfoModel().isAuthenticated = false
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     private var currentPageState : MainFragmentState = MainFragmentState.FILE_LIST
     private fun setViewPagerProperties() {
         val viewPager : ViewPager2 = mViewDataBinding.mainViewPager

@@ -11,4 +11,8 @@
     <string name ="directory_no_content">
         비어있는 폴더입니다
     </string>
+
+    <string name="unsupported_file_extension">
+        지원되지 않는 파일 양식입니다
+    </string>
 </resources>
