@@ -4,18 +4,27 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
+import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.library.baseAdapters.BR
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.databinding.FragmentFavoriteBinding
 import com.ayteneve93.apexexplorer.view.base.BaseFragment
 import com.ayteneve93.apexexplorer.view.main.MainBroadcastPreference
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
 class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel>() {
 
     private val mFavoriteViewModel : FavoriteViewModel by viewModel()
+    private val mFavoriteListRecyclerAdapter : FavoriteListRecyclerAdapter by inject()
 
     private val mFavoriteBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context : Context?, intent : Intent?) {
@@ -47,6 +56,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
 
     override fun setUp() {
         setBroadcastReceiver()
+        setFavoriteListRecyclerAdapter()
     }
 
     private fun setBroadcastReceiver() {
@@ -59,6 +69,17 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
     override fun onDestroy() {
         super.onDestroy()
         activity?.unregisterReceiver(mFavoriteBroadcastReceiver)
+    }
+
+    private fun setFavoriteListRecyclerAdapter() {
+        val fragmentFavoriteRecyclerView = mViewDataBinding.fragmentFavoriteRecyclerView
+        fragmentFavoriteRecyclerView.adapter = mFavoriteListRecyclerAdapter
+        when(resources.configuration.orientation) {
+            Configuration.ORIENTATION_PORTRAIT -> fragmentFavoriteRecyclerView.layoutManager = GridLayoutManager(mActivity, 1)
+            Configuration.ORIENTATION_LANDSCAPE -> fragmentFavoriteRecyclerView.layoutManager = GridLayoutManager(mActivity, 2)
+        }
+        fragmentFavoriteRecyclerView.addItemDecoration(DividerItemDecoration(fragmentFavoriteRecyclerView.context, DividerItemDecoration.VERTICAL))
+        mFavoriteListRecyclerAdapter.refresh()
     }
 
     companion object {

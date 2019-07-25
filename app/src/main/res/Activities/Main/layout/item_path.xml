@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+                name="viewModel"
+                type="com.ayteneve93.apexexplorer.view.main.PathViewModel"/>
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:padding="7sp"
+                  android:layout_margin="7sp"
+                  android:orientation="horizontal"
+                  android:onClick="@{() -> viewModel.onItemClick()}"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content">
+        <TextView
+                android:text="@{viewModel.mDirectoryTitle}"
+                android:textSize="18sp"
+                android:textStyle='@{viewModel.mIsSelected ? "bold" : "normal"}'
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:text="@{viewModel.mNextIndicatorString}"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+</layout>

@@ -15,4 +15,22 @@
     <string name="unsupported_file_extension">
         지원되지 않는 파일 양식입니다
     </string>
+
+    <string name="root_directory_title">
+        내 파일
+    </string>
+
+    <string name="favorites_title">
+        즐겨찾기
+    </string>
+
+    <string name="press_again_to_exist">
+        한 번 더 누르시면 종료됩니다
+    </string>
+
+    <string name="no_favorite_content">
+        즐겨찾기에 추가된 파일이 없습니다
+        별표를 눌러 추가해주세요
+    </string>
+
 </resources>

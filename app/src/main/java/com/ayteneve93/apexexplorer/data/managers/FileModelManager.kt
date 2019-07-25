@@ -6,9 +6,12 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import androidx.databinding.ObservableField
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.application.SuppressWarningAttributes
 import com.ayteneve93.apexexplorer.data.FileModel
+import com.ayteneve93.apexexplorer.utils.PreferenceCategory
+import com.ayteneve93.apexexplorer.utils.PreferenceUtils
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import java.io.File
@@ -16,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class FileModelManager(private val application : Application) {
+class FileModelManager(private val application : Application, private val mPreferenceUtils: PreferenceUtils) {
     fun scanFileListFrom(path : String?, onScanResult : (isSucceed : Boolean, fileModelList : ArrayList<FileModel>?) -> Unit) {
         TedPermission.with(application)
             .setPermissionListener(object : PermissionListener {
@@ -25,19 +28,19 @@ class FileModelManager(private val application : Application) {
                     if(file.exists()) {
                         if (file.isDirectory) {
                             val fileModelList = ArrayList<FileModel>()
-                            file.listFiles().forEach {
+                            val favoriteFileSet = mPreferenceUtils.getStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES)
+                            file.listFiles()?.forEach {
                                 eachFile ->
-                                if(eachFile.exists()) {
+                                if(eachFile.exists() && !eachFile.name.startsWith(".")) { // '.' 으로 시작하는 파일(일반적으로 시스템 파일)은 제외
                                     val eachFileModel = FileModel (
                                             getFileIconResId(eachFile),
                                             eachFile.name,
                                             eachFile.isDirectory,
                                             SimpleDateFormat.getDateTimeInstance().format(Date(eachFile.lastModified())),
-                                            getIsFavorite(eachFile),
                                             eachFile.isHidden,
-                                            eachFile.canonicalPath)
-
-
+                                            eachFile.canonicalPath,
+                                            file.canonicalPath)
+                                    eachFileModel.isFavorite.set(favoriteFileSet.contains(eachFile.canonicalPath))
                                     if(!eachFileModel.isDirectory) {
                                         eachFileModel.extension = eachFile.extension
                                         setFileSizeAndUnit(eachFile, eachFileModel)
@@ -47,7 +50,38 @@ class FileModelManager(private val application : Application) {
                             }
                             onScanResult(true, fileModelList)
                         } else onScanResult(false, null)
-                    }
+                    } else onScanResult(false, null)
+                }
+                override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {}
+            })
+            .setRationaleMessage(R.string.permission_external_storage_rational_message)
+            .setDeniedMessage(R.string.permission_external_storage_denied_message)
+            .setGotoSettingButton(true)
+            .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .check()
+    }
+
+    fun getFileInfoFrom(path : String, onGetResult : (isSucceed : Boolean, fileModel : FileModel?) -> Unit) {
+        TedPermission.with(application)
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    val file = File(path?:Environment.getExternalStorageDirectory().path)
+                    if(file.exists()) {
+                        val file = File(path)
+                        val fileModel = FileModel(
+                            getFileIconResId(file),
+                            file.name,
+                            file.isDirectory,
+                            SimpleDateFormat.getDateTimeInstance().format(Date(file.lastModified())),
+                            file.isHidden,
+                            file.canonicalPath)
+                        fileModel.isFavorite.set(true)
+                        if(!fileModel.isDirectory) {
+                            fileModel.extension = fileModel.extension
+                            setFileSizeAndUnit(file, fileModel)
+                        }
+                        onGetResult(true, fileModel)
+                    } else onGetResult(false, null)
                 }
                 override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {}
             })
@@ -105,10 +139,6 @@ class FileModelManager(private val application : Application) {
             sizeUnit = application.resources.getStringArray(R.array.file_size_unit)[parsedCount]
         }
         return
-    }
-
-    private fun getIsFavorite(file : File) : Boolean {
-        return false
     }
 
 }

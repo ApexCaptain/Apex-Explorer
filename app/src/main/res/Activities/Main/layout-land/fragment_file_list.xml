@@ -14,10 +14,11 @@
 
 
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_empty_directory"
+                android:layout_width="0dp"
+                android:layout_height="0dp" app:srcCompat="@drawable/ic_empty_directory"
                 android:id="@+id/fragment_file_list_empty_directory_image"
                 android:visibility="@{safeUnbox(viewModel.mIsEmptyDirectory) ? View.VISIBLE : View.GONE}"
+                app:layout_constraintHeight_percent="0.4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="@+id/fragment_file_list_refresh"
                 app:layout_constraintTop_toTopOf="@+id/fragment_file_list_refresh"

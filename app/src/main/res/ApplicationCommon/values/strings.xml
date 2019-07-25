@@ -12,9 +12,25 @@
         Empty Directory
     </string>
 
+    <string name="no_favorite_content">
+        You haven\'t added any favorite content
+        \nPlease, tab the star to mark
+    </string>
+
     <string name="unsupported_file_extension">
         Unsupported File Extension
     </string>
 
+    <string name="root_directory_title">
+        My Files
+    </string>
+
+    <string name="favorites_title">
+        Favorites
+    </string>
+
+    <string name="press_again_to_exist">
+        Press again to exit
+    </string>
 
 </resources>

@@ -2,6 +2,7 @@ package com.ayteneve93.apexexplorer.view.entry
 
 import android.content.Intent
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.biometric.BiometricConstants
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,17 +17,20 @@ import com.ayteneve93.apexexplorer.utils.PreferenceUtils
 import com.ayteneve93.apexexplorer.utils.PreferenceCategory
 import com.ayteneve93.apexexplorer.view.base.BaseActivity
 import com.ayteneve93.apexexplorer.view.main.MainActivity
+import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.util.*
+import kotlin.collections.ArrayList
 
 class EntryActivity : BaseActivity<ActivityEntryBinding, EntryViewModel>() {
 
     private val mEntryViewModel : EntryViewModel by viewModel()
-    val mFireBaseAuthManager : FireBaseAuthManager by inject()
-    val mBiometricManager : BiometricAuthManager by inject()
-    val mAppTitleModelManager : AppTitleModelManager by inject()
-    val mUserAccountInfoModelManager : UserAccountInfoModelManager by inject()
-    val mPreferenceUtils : PreferenceUtils by inject()
+    private val mFireBaseAuthManager : FireBaseAuthManager by inject()
+    private val mBiometricManager : BiometricAuthManager by inject()
+    private val mAppTitleModelManager : AppTitleModelManager by inject()
+    private val mUserAccountInfoModelManager : UserAccountInfoModelManager by inject()
+    private val mPreferenceUtils : PreferenceUtils by inject()
 
     override fun getLayoutId(): Int { return R.layout.activity_entry }
     override fun getViewModel(): EntryViewModel { return mEntryViewModel }

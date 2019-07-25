@@ -4,12 +4,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.databinding.library.baseAdapters.BR
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.data.managers.UserAccountInfoModelManager
@@ -24,6 +28,9 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     private val mMainViewModel: MainViewModel by viewModel()
     private val mAlphaAnimationHandler = Handler(Looper.getMainLooper())
     private val mUserAccountInfoModelManager : UserAccountInfoModelManager by inject()
+    private val mPathRecyclerAdapter : PathRecyclerAdapter by inject()
+
+    private var mCurrentMainFragmentState : MainFragmentState = MainFragmentState.FILE_LIST
 
     private val mMainBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -42,6 +49,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     override fun setUp() {
         setBroadcastReceiver()
         setViewPagerProperties()
+        setPathRecyclerView()
     }
 
 
@@ -57,10 +65,34 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        when(mCurrentMainFragmentState) {
+            MainFragmentState.FILE_LIST -> {
+                val backButtonPressedIntent = Intent().setAction(MainBroadcastPreference.MainToFragment.Action.BACK_BUTTON_PRESSED)
+                backButtonPressedIntent.putExtra(MainBroadcastPreference.MainToFragment.Who.KEY,
+                    MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST)
+                sendBroadcast(backButtonPressedIntent)
+            }
+            MainFragmentState.FAVORITE -> {
+                mViewDataBinding.mainViewPager.currentItem = MainFragmentState.FILE_LIST.ordinal
+            }
+        }
     }
 
-    private var currentPageState : MainFragmentState = MainFragmentState.FILE_LIST
+    private var applicationTerminatingFlag = false
+    private val applicationTerminatingHandler = Handler()
+    fun terminateActivity() {
+        if(!applicationTerminatingFlag) {
+            Toast.makeText(this, R.string.press_again_to_exist, Toast.LENGTH_LONG).show()
+            applicationTerminatingFlag = true
+            applicationTerminatingHandler.removeCallbacksAndMessages(null)
+            applicationTerminatingHandler.postDelayed({
+                applicationTerminatingFlag = false
+            }, 3000)
+            return
+        }
+        finish()
+    }
+
     private fun setViewPagerProperties() {
         val viewPager : ViewPager2 = mViewDataBinding.mainViewPager
         viewPager.adapter = MainFragmentStateAdapter(this)
@@ -91,8 +123,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 val newFragmentState = MainFragmentState.getState(position)
-                onFragmentChanged(currentPageState, newFragmentState)
-                currentPageState = newFragmentState
+                onFragmentChanged(mCurrentMainFragmentState, newFragmentState)
+                mCurrentMainFragmentState = newFragmentState
             }
         })
 
@@ -104,10 +136,12 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
         when(newFragmentState) {
             MainFragmentState.FILE_LIST -> {
+                mPathRecyclerAdapter.refresh(currentPath)
                 selectedIntent.putExtra(MainBroadcastPreference.MainToFragment.Who.KEY,
                     MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST)
             }
             MainFragmentState.FAVORITE -> {
+                mPathRecyclerAdapter.setToFavorite()
                 selectedIntent.putExtra(MainBroadcastPreference.MainToFragment.Who.KEY,
                     MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE)
             }
@@ -126,6 +160,24 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         }
         sendBroadcast(unSelectedIntent)
 
+    }
+
+    private fun setPathRecyclerView() {
+        val pathRecyclerView : RecyclerView = mViewDataBinding.mainPathRecyclerView
+        pathRecyclerView.adapter = mPathRecyclerAdapter.setPathClickedListener {
+            sendBroadcast(
+            Intent().setAction(MainBroadcastPreference.MainToFragment.Action.PATH_CLICKED)
+                .putExtra(MainBroadcastPreference.MainToFragment.Who.KEY, MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST)
+                .putExtra(MainBroadcastPreference.MainToFragment.Path.KEY, it)
+            )
+        }
+        pathRecyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+    }
+
+    var currentPath : String? = null
+    fun refreshPathRecyclerView(path : String?) {
+        currentPath = path
+        mPathRecyclerAdapter.refresh(path)
     }
 
 
