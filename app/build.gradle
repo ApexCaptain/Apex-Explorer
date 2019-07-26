@@ -124,6 +124,8 @@ dependencies {
     // Custom Views
     implementation "me.relex:circleindicator:$circle_indicator_version"
 
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
+
     implementation "com.wang.avi:library:$wang_avi_process_indicator_version"
 
     // TedPermission

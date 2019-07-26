@@ -1,6 +1,7 @@
 package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 
 import android.app.Application
+import android.content.Intent
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import com.ayteneve93.apexexplorer.data.managers.FileModelManager
 import com.ayteneve93.apexexplorer.databinding.ItemFileListBinding
 import com.ayteneve93.apexexplorer.utils.PreferenceCategory
 import com.ayteneve93.apexexplorer.utils.PreferenceUtils
+import com.ayteneve93.apexexplorer.view.main.MainBroadcastPreference
 
 class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, private val mFileModelManager: FileModelManager, private val application: Application) : RecyclerView.Adapter<FileListRecyclerAdapter.FileListViewHolder>() {
 
@@ -66,6 +68,8 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                                 mPreferenceUtils.addStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
                                 mFileModel.isFavorite.set(true)
                             }
+                            application.sendBroadcast(Intent(MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED)
+                                .putExtra(MainBroadcastPreference.FragmentToFragment.Who.KEY, MainBroadcastPreference.FragmentToFragment.Who.Values.FAVORITE))
                         }
                         onItemClickListener = {
                             fileClickedListener?.let {

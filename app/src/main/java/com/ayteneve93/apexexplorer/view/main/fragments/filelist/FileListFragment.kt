@@ -2,19 +2,13 @@ package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 
 import android.content.*
 import android.content.res.Configuration
-import android.os.Bundle
 import android.os.Environment
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.ayteneve93.apexexplorer.R
@@ -26,8 +20,6 @@ import com.ayteneve93.apexexplorer.utils.PreferenceUtils
 import com.ayteneve93.apexexplorer.view.base.BaseFragment
 import com.ayteneve93.apexexplorer.view.main.MainActivity
 import com.ayteneve93.apexexplorer.view.main.MainBroadcastPreference
-import com.ayteneve93.apexexplorer.view.main.MainFragmentState
-import com.ayteneve93.apexexplorer.view.main.PathRecyclerAdapter
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.io.File
@@ -43,11 +35,15 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
     private val mFileListBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context : Context?, intent : Intent?) {
             intent?.let {
+
+
+                // 메인 액티비티에서 온 명령인 경우
                 (it.getStringExtra(MainBroadcastPreference.MainToFragment.Who.KEY))?.let {
                     target ->
                     if(target == MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST) {
                         when(it.action) {
                             MainBroadcastPreference.MainToFragment.Action.FRAGMENT_SELECTED -> {
+                                mViewDataBinding.fragmentFileListRefresh.isRefreshing = false
                             }
                             MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED -> {
 
@@ -64,6 +60,29 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
                         }
                     }
                 }
+
+
+                // 다른 프래그먼트에서 온 경우
+                (it.getStringExtra(MainBroadcastPreference.FragmentToFragment.Who.KEY))?.let {
+                    target ->
+                    if(target == MainBroadcastPreference.FragmentToFragment.Who.Values.FILE_LIST) {
+                        when(it.action) {
+                            MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED -> {
+                                refreshFileListStepTwo(mCurrentPath, false)
+                            }
+                        }
+                    }
+                }
+
+                // 프래그먼트에서 전체 호출
+                when(it.action) {
+                    MainBroadcastPreference.FragmentToAll.Action.FAVORITE_ITEM_SELECTED -> {
+                        val filePath = it.getStringExtra(MainBroadcastPreference.FragmentToAll.FilePath.Key)
+                        refreshFileListStepOne(filePath,false)
+                    }
+                }
+
+
             }
         }
     }
@@ -98,12 +117,24 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
 
 
     private fun setBroadcastReceiver() {
-        val fileListIntentFilter = IntentFilter()
-        fileListIntentFilter.addAction(MainBroadcastPreference.MainToFragment.Action.FRAGMENT_SELECTED)
-        fileListIntentFilter.addAction(MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED)
-        fileListIntentFilter.addAction(MainBroadcastPreference.MainToFragment.Action.BACK_BUTTON_PRESSED)
-        fileListIntentFilter.addAction(MainBroadcastPreference.MainToFragment.Action.PATH_CLICKED)
-        activity?.registerReceiver(mFileListBroadcastReceiver, fileListIntentFilter)
+        activity?.registerReceiver(mFileListBroadcastReceiver, IntentFilter().also {
+            arrayOf(
+
+                MainBroadcastPreference.MainToFragment.Action.FRAGMENT_SELECTED,
+                MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED,
+                MainBroadcastPreference.MainToFragment.Action.BACK_BUTTON_PRESSED,
+                MainBroadcastPreference.MainToFragment.Action.PATH_CLICKED,
+
+                MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED,
+                MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_EMPTY,
+
+                MainBroadcastPreference.FragmentToAll.Action.FAVORITE_ITEM_SELECTED
+
+            ).forEach {
+                eachAction ->
+                it.addAction(eachAction)
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -118,7 +149,6 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
             Configuration.ORIENTATION_PORTRAIT -> fragmentFileListRecyclerView.layoutManager = GridLayoutManager(mActivity, 1)
             Configuration.ORIENTATION_LANDSCAPE -> fragmentFileListRecyclerView.layoutManager = GridLayoutManager(mActivity, 2)
         }
-        //fragmentFileListRecyclerView.layoutManager = LinearLayoutManager(mActivity, RecyclerView.VERTICAL, false)
         fragmentFileListRecyclerView.addItemDecoration(DividerItemDecoration(fragmentFileListRecyclerView.context, DividerItemDecoration.VERTICAL))
     }
 

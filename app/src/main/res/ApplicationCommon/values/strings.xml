@@ -33,4 +33,24 @@
         Press again to exit
     </string>
 
+    <string name="item_favorite_extension">
+        Extension : %1$s
+    </string>
+
+    <string name="item_favorite_path">
+        Path      : %1$s
+    </string>
+
+    <string name="item_favorite_size">
+        Size      : %1$s
+    </string>
+
+    <string name="item_favorite_calculating">
+        Calculating&#8230;
+    </string>
+
+    <string name="item_path_home_directory">
+        Home Directory
+    </string>
+
 </resources>

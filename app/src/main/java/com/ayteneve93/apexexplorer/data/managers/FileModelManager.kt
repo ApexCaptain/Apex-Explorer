@@ -2,13 +2,13 @@ package com.ayteneve93.apexexplorer.data.managers
 
 import android.app.Application
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.ExifInterface
+import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
-import android.widget.Toast
-import androidx.databinding.ObservableField
 import com.ayteneve93.apexexplorer.R
-import com.ayteneve93.apexexplorer.application.SuppressWarningAttributes
 import com.ayteneve93.apexexplorer.data.FileModel
 import com.ayteneve93.apexexplorer.utils.PreferenceCategory
 import com.ayteneve93.apexexplorer.utils.PreferenceUtils
@@ -65,9 +65,8 @@ class FileModelManager(private val application : Application, private val mPrefe
         TedPermission.with(application)
             .setPermissionListener(object : PermissionListener {
                 override fun onPermissionGranted() {
-                    val file = File(path?:Environment.getExternalStorageDirectory().path)
+                    val file = File(path)
                     if(file.exists()) {
-                        val file = File(path)
                         val fileModel = FileModel(
                             getFileIconResId(file),
                             file.name,
@@ -76,8 +75,9 @@ class FileModelManager(private val application : Application, private val mPrefe
                             file.isHidden,
                             file.canonicalPath)
                         fileModel.isFavorite.set(true)
+                        fileModel.extension = fileModel.extension
                         if(!fileModel.isDirectory) {
-                            fileModel.extension = fileModel.extension
+                            fileModel.extension = file.extension
                             setFileSizeAndUnit(file, fileModel)
                         }
                         onGetResult(true, fileModel)
@@ -108,6 +108,20 @@ class FileModelManager(private val application : Application, private val mPrefe
         return fileViewIntent
     }
 
+    fun getThumbnailUriFromModel(fileModel : FileModel) : Uri {
+        if(fileModel.isDirectory) {
+            File(fileModel.canonicalPath).listFiles().forEach {
+                if(it.extension in application.resources.getStringArray(R.array.file_extensions_case_image)) {
+                    return Uri.parse(it.canonicalPath)
+                }
+            }
+        } else {
+            if(fileModel.extension in application.resources.getStringArray(R.array.file_extensions_case_image))
+                return Uri.parse(fileModel.canonicalPath)
+        }
+        return Uri.parse("android.resource://${application.packageName}/${getFileIconResId(File(fileModel.canonicalPath))}")
+    }
+
     private fun getFileIconResId(file : File) : Int {
         return if(file.isDirectory) R.drawable.ic_file_directory
         else {
@@ -124,7 +138,7 @@ class FileModelManager(private val application : Application, private val mPrefe
         }
     }
 
-    private fun setFileSizeAndUnit(file : File, fileModel : FileModel) {
+    fun setFileSizeAndUnit(file : File, fileModel : FileModel) {
         val splitUnit = 1024
         var dataSize : Double = file.length().toDouble()
 
@@ -139,6 +153,35 @@ class FileModelManager(private val application : Application, private val mPrefe
             sizeUnit = application.resources.getStringArray(R.array.file_size_unit)[parsedCount]
         }
         return
+    }
+
+    fun setDeepFileSizeAndUnit(fileModel : FileModel) {
+        val file = File(fileModel.canonicalPath)
+        var dataSize = getFolderSize(file)
+        val originalSize = dataSize
+        val splitUnit = 1024
+
+        var parsedCount = 0
+        while(dataSize > splitUnit) {
+            dataSize /= splitUnit
+            parsedCount++
+        }
+        fileModel.apply {
+            this.originalSize = originalSize.toLong()
+            size = dataSize.toFloat()
+            sizeUnit = application.resources.getStringArray(R.array.file_size_unit)[parsedCount]
+        }
+        return
+    }
+
+    private fun getFolderSize(file : File) : Double {
+        var size = 0.0
+        if(file.isDirectory) {
+            file.listFiles().forEach {
+                size += getFolderSize(it)
+            }
+        } else size = file.length().toDouble()
+        return size
     }
 
 }

@@ -4,10 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
@@ -36,6 +34,13 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.let {
 
+                // 프래그먼트로부터 전체 호출
+                when(it.action) {
+                    MainBroadcastPreference.FragmentToAll.Action.FAVORITE_ITEM_SELECTED -> {
+                        mViewDataBinding.mainViewPager.currentItem = MainFragmentState.FILE_LIST.ordinal
+                    }
+                }
+
             }
         }
     }
@@ -56,6 +61,16 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     private fun setBroadcastReceiver() {
         val mainIntentFilter = IntentFilter()
         registerReceiver(mMainBroadcastReceiver, mainIntentFilter)
+        registerReceiver(mMainBroadcastReceiver, IntentFilter().also {
+            arrayOf(
+
+                MainBroadcastPreference.FragmentToAll.Action.FAVORITE_ITEM_SELECTED
+
+            ).forEach {
+                eachAction ->
+                it.addAction(eachAction)
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -136,7 +151,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
         when(newFragmentState) {
             MainFragmentState.FILE_LIST -> {
-                mPathRecyclerAdapter.refresh(currentPath)
+                mPathRecyclerAdapter.refresh(mCurrentPath)
                 selectedIntent.putExtra(MainBroadcastPreference.MainToFragment.Who.KEY,
                     MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST)
             }
@@ -174,10 +189,13 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         pathRecyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
     }
 
-    var currentPath : String? = null
+    private var mCurrentPath : String? = null
     fun refreshPathRecyclerView(path : String?) {
-        currentPath = path
-        mPathRecyclerAdapter.refresh(path)
+        mCurrentPath = path
+        when(mCurrentMainFragmentState) {
+            MainFragmentState.FILE_LIST -> mPathRecyclerAdapter.refresh(path)
+            MainFragmentState.FAVORITE -> mPathRecyclerAdapter.setToFavorite()
+        }
     }
 
 

@@ -30,7 +30,27 @@
 
     <string name="no_favorite_content">
         즐겨찾기에 추가된 파일이 없습니다
-        별표를 눌러 추가해주세요
+        \n별표를 눌러 추가해주세요
+    </string>
+
+    <string name="item_favorite_extension">
+        파일 형식  : %1$s
+    </string>
+
+    <string name="item_favorite_path">
+        경로       : %1$s
+    </string>
+
+    <string name="item_favorite_size">
+        크기       : %1$s
+    </string>
+
+    <string name="item_favorite_calculating">
+        계산중&#8230;
+    </string>
+
+    <string name="item_path_home_directory">
+        홈 디렉토리
     </string>
 
 </resources>
