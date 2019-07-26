@@ -1,14 +1,20 @@
 package com.ayteneve93.apexexplorer.view.main
 
+import android.app.Activity
+import android.app.SearchManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
+import android.view.Menu
+import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +33,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     private val mAlphaAnimationHandler = Handler(Looper.getMainLooper())
     private val mUserAccountInfoModelManager : UserAccountInfoModelManager by inject()
     private val mPathRecyclerAdapter : PathRecyclerAdapter by inject()
+    private lateinit var mSearchView : SearchView
+    private var mIsFileListSearchMode = false
+    private var mIsFavoriteSearchMode = false
+    private var mSearchKeyword = ""
 
     private var mCurrentMainFragmentState : MainFragmentState = MainFragmentState.FILE_LIST
 
@@ -55,6 +65,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         setBroadcastReceiver()
         setViewPagerProperties()
         setPathRecyclerView()
+        setToolBar()
     }
 
 
@@ -80,6 +91,25 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     override fun onBackPressed() {
+        if(!mSearchView.isIconified) {
+            mSearchView.isIconified = true
+            return
+        }
+        if(mIsFileListSearchMode && mCurrentMainFragmentState == MainFragmentState.FILE_LIST) {
+            sendBroadcast(Intent(MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED)
+                .putExtra(MainBroadcastPreference.MainToFragment.Who.KEY, MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST))
+            mPathRecyclerAdapter.refresh(mCurrentPath)
+            mIsFileListSearchMode = false
+            return
+        }
+        if(mIsFavoriteSearchMode && mCurrentMainFragmentState == MainFragmentState.FAVORITE) {
+            sendBroadcast(Intent(MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED)
+                .putExtra(MainBroadcastPreference.MainToFragment.Who.KEY, MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE))
+            mPathRecyclerAdapter.setToFavorite()
+            mIsFavoriteSearchMode = false
+            return
+        }
+
         when(mCurrentMainFragmentState) {
             MainFragmentState.FILE_LIST -> {
                 val backButtonPressedIntent = Intent().setAction(MainBroadcastPreference.MainToFragment.Action.BACK_BUTTON_PRESSED)
@@ -151,12 +181,14 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
         when(newFragmentState) {
             MainFragmentState.FILE_LIST -> {
-                mPathRecyclerAdapter.refresh(mCurrentPath)
+                if(mIsFileListSearchMode) mPathRecyclerAdapter.setToSearch(mSearchKeyword)
+                else mPathRecyclerAdapter.refresh(mCurrentPath)
                 selectedIntent.putExtra(MainBroadcastPreference.MainToFragment.Who.KEY,
                     MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST)
             }
             MainFragmentState.FAVORITE -> {
-                mPathRecyclerAdapter.setToFavorite()
+                if(mIsFavoriteSearchMode) mPathRecyclerAdapter.setToSearch(mSearchKeyword)
+                else mPathRecyclerAdapter.setToFavorite()
                 selectedIntent.putExtra(MainBroadcastPreference.MainToFragment.Who.KEY,
                     MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE)
             }
@@ -198,6 +230,71 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         }
     }
 
+    private fun setToolBar() {
+        setSupportActionBar(mViewDataBinding.mainToolbar)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setIcon(R.drawable.ic_app_icon_mini)
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main_app_bar, menu)
+        val searchManager : SearchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        mSearchView = menu!!.findItem(R.id.menu_main_app_bar_search).actionView as SearchView
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        mSearchView.queryHint = getString(R.string.search_in_my_files, getString(
+            when(mCurrentMainFragmentState) {
+                MainFragmentState.FILE_LIST -> R.string.root_directory_title
+                MainFragmentState.FAVORITE -> R.string.favorites_title
+        }))
+
+        mSearchView.setOnQueryTextFocusChangeListener {
+            view, isFocused ->
+            mMainViewModel.mViewPagerVisibility.set(!isFocused)
+        }
+
+        mSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                (getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow((currentFocus?:View(this@MainActivity)).windowToken, 0)
+                query?.let {
+                    sendBroadcast(Intent(MainBroadcastPreference.MainToFragment.Action.SEARCH)
+                        .putExtra(MainBroadcastPreference.MainToFragment.Who.KEY, when(mCurrentMainFragmentState) {
+                            MainFragmentState.FILE_LIST -> {
+                                mIsFileListSearchMode = true
+                                MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST
+                            }
+                            MainFragmentState.FAVORITE -> {
+                                mIsFavoriteSearchMode = true
+                                MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE
+                            } })
+                        .putExtra(MainBroadcastPreference.MainToFragment.Keyword.KEY, it))
+                    mPathRecyclerAdapter.setToSearch(it)
+                    mMainViewModel.mViewPagerVisibility.set(true)
+                    mSearchKeyword = it
+                }
+
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean { return true }
+        })
+        mSearchView.setOnCloseListener {
+            sendBroadcast(Intent(MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED)
+                .putExtra(MainBroadcastPreference.MainToFragment.Who.KEY, when(mCurrentMainFragmentState) {
+                    MainFragmentState.FILE_LIST -> {
+                        mIsFileListSearchMode = false
+                        mPathRecyclerAdapter.refresh(mCurrentPath)
+                        MainBroadcastPreference.MainToFragment.Who.Values.FILE_LIST
+                    }
+                    MainFragmentState.FAVORITE -> {
+                        mIsFavoriteSearchMode = false
+                        mPathRecyclerAdapter.setToFavorite()
+                        MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE
+                    }
+                }))
+            mMainViewModel.mViewPagerVisibility.set(true)
+            false
+        }
+        return true
+    }
 
 }

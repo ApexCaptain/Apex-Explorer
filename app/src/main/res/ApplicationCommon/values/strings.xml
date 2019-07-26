@@ -17,6 +17,10 @@
         \nPlease, tab the star to mark
     </string>
 
+    <string name="no_search_result">
+        No search result
+    </string>
+
     <string name="unsupported_file_extension">
         Unsupported File Extension
     </string>
@@ -51,6 +55,14 @@
 
     <string name="item_path_home_directory">
         Home Directory
+    </string>
+
+    <string name="search_in_my_files">
+        Search in %1$s
+    </string>
+
+    <string name="search_by">
+        Search by \'%1$s\'
     </string>
 
 </resources>

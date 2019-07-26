@@ -25,7 +25,7 @@
                 app:layout_constraintStart_toStartOf="@+id/fragment_file_list_refresh"
                 app:layout_constraintVertical_bias="0.40"/>
         <TextView
-                android:text="@string/directory_no_content"
+                android:text="@{viewModel.mNoContentString}"
                 android:visibility="@{safeUnbox(viewModel.mIsEmptyDirectory) ? View.VISIBLE : View.GONE}"
                 android:textStyle="bold"
                 android:textSize="@dimen/file_item_title_size"

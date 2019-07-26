@@ -27,6 +27,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
 
     private val mFavoriteViewModel : FavoriteViewModel by viewModel()
     private val mFavoriteListRecyclerAdapter : FavoriteListRecyclerAdapter by inject()
+    private var mIsSearchMode = false
 
     private val mFavoriteBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context : Context?, intent : Intent?) {
@@ -46,6 +47,23 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
                             MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED -> {
                                 if(intent.getStringExtra(MainBroadcastPreference.MainToFragment.Who.KEY) == MainBroadcastPreference.MainToFragment.Who.Values.FAVORITE) {
                                 }
+                            }
+                            MainBroadcastPreference.MainToFragment.Action.SEARCH -> {
+                                mIsSearchMode = true
+                                mViewDataBinding.fragmentFavoriteRefresh.isRefreshing = true
+                                mFavoriteListRecyclerAdapter.searchByKeyword(intent.getStringExtra(MainBroadcastPreference.MainToFragment.Keyword.KEY)) {
+                                    isEmpty ->
+                                    if(isEmpty) mFavoriteViewModel.mNoContentString.value = getString(R.string.no_search_result)
+                                    mFavoriteViewModel.mIsEmptyDirectory.set(isEmpty)
+                                    mViewDataBinding.fragmentFavoriteRefresh.isRefreshing = false
+                                    mViewDataBinding.fragmentFavoriteRefresh.isEnabled = false
+                                }
+                            }
+                            MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED -> {
+                                Log.d("ayteneve93_test", "qwe")
+                                mIsSearchMode = false
+                                mViewDataBinding.fragmentFavoriteRefresh.isEnabled = true
+                                refreshFavoriteListStepTwo(false)
                             }
                         }
                     }
@@ -97,6 +115,8 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
 
                 MainBroadcastPreference.MainToFragment.Action.FRAGMENT_SELECTED,
                 MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED,
+                MainBroadcastPreference.MainToFragment.Action.SEARCH,
+                MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED,
 
                 MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED,
                 MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_EMPTY
@@ -125,7 +145,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
 
     private fun setFavoriteRefreshLayout() {
         mViewDataBinding.fragmentFavoriteRefresh.setOnRefreshListener {
-            refreshFavoriteListStepOne()
+            if(!mIsSearchMode)refreshFavoriteListStepOne()
         }
     }
 
@@ -154,6 +174,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
         if(!mViewDataBinding.fragmentFavoriteRefresh.isRefreshing && useRefresh) mViewDataBinding.fragmentFavoriteRefresh.isRefreshing = true
         mFavoriteListRecyclerAdapter.refresh(mActivity!!) {
             isEmpty ->
+            mFavoriteViewModel.mNoContentString.value = getString(R.string.no_favorite_content)
             mFavoriteViewModel.mShouldRecyclerViewInvisible.set(false)
             mViewDataBinding.fragmentFavoriteRecyclerView.startAnimation(alphaAppearAnim)
             mViewDataBinding.fragmentFavoriteRefresh.isRefreshing = false

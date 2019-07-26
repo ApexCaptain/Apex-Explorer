@@ -54,11 +54,11 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                 // Todo : 파일 정렬은 기본적으로 아이콘 별(확장자별) -> 이름 순으로 정함. 추후 사용자 옵션에 따라 변결될 수 있게끔 바꿔야함
 
                 fileModelList?.forEach {
-                    eachFileViewModel ->
+                    eachFileModel ->
                     mFileViewModelList.add(FileViewModel(application).apply {
-                        mFileModel = eachFileViewModel
-                        mSubTitle = if(eachFileViewModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
-                        else "${kotlin.math.round(eachFileViewModel.size!! * 100) / 100} ${eachFileViewModel.sizeUnit}"
+                        mFileModel = eachFileModel
+                        mSubTitle = if(eachFileModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
+                        else "${kotlin.math.round(eachFileModel.size!! * 100) / 100} ${eachFileModel.sizeUnit}"
                         onFavoriteButtonClickListener = {
                             val currentFavoriteState = mFileModel.isFavorite.get()
                             if(currentFavoriteState!!) {
@@ -77,8 +77,8 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                             }
                         }
                         onItemLongClickListener = {
-                                view ->
-                            Log.d("ayteneve93_test", "long clicked ${eachFileViewModel.canonicalPath}")
+                            view ->
+                            Log.d("ayteneve93_test", "long clicked ${eachFileModel.canonicalPath}")
                             false
                         }
                     })
@@ -86,6 +86,47 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                 notifyDataSetChanged()
                 onRefreshFinished(true, fileModelList?.size == 0)
             } else onRefreshFinished(false, true)
+        }
+    }
+
+    fun searchByKeyword(rootPath : String, keyword : String, onSearchResult : (isEmpty : Boolean) -> Unit) {
+        mFileViewModelList.clear()
+        notifyDataSetChanged()
+        mFileModelManager.searchByKeyword(rootPath, keyword) {
+            fileModelList ->
+            fileModelList.sortWith(compareBy ({ it.iconResId }, {it.title}) )
+            fileModelList.forEach {
+                eachFileModel ->
+                mFileViewModelList.add(FileViewModel(application).apply {
+                    mFileModel = eachFileModel
+                    mSubTitle = if(eachFileModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
+                    else "${kotlin.math.round(eachFileModel.size!! * 100) / 100} ${eachFileModel.sizeUnit}"
+                    onFavoriteButtonClickListener = {
+                        val currentFavoriteState = mFileModel.isFavorite.get()
+                        if(currentFavoriteState!!) {
+                            mPreferenceUtils.removeStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
+                            mFileModel.isFavorite.set(false)
+                        } else {
+                            mPreferenceUtils.addStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
+                            mFileModel.isFavorite.set(true)
+                        }
+                        application.sendBroadcast(Intent(MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED)
+                            .putExtra(MainBroadcastPreference.FragmentToFragment.Who.KEY, MainBroadcastPreference.FragmentToFragment.Who.Values.FAVORITE))
+                    }
+                    onItemClickListener = {
+                        fileClickedListener?.let {
+                            it(mFileModel)
+                        }
+                    }
+                    onItemLongClickListener = {
+                            view ->
+                        Log.d("ayteneve93_test", "long clicked ${eachFileModel.canonicalPath}")
+                        false
+                    }
+                })
+            }
+            notifyDataSetChanged()
+            onSearchResult(mFileViewModelList.isEmpty())
         }
     }
 

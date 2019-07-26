@@ -14,11 +14,14 @@
             tools:context=".view.main.MainActivity">
 
         <androidx.appcompat.widget.Toolbar
+
+                app:titleMarginStart="32dp"
+                android:fitsSystemWindows="true"
+
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                android:theme="?attr/actionBarTheme"
-                android:minHeight="?attr/actionBarSize" android:id="@+id/main_toolbar"
+                android:id="@+id/main_toolbar"
                 app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
 
@@ -31,6 +34,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
                 app:layout_constraintEnd_toEndOf="parent"/>
         <androidx.viewpager2.widget.ViewPager2
+                android:visibility="@{safeUnbox(viewModel.mViewPagerVisibility) ? View.VISIBLE : View.GONE}"
                 android:id="@+id/main_view_pager"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

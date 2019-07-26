@@ -8,6 +8,7 @@ import android.media.ExifInterface
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.data.FileModel
 import com.ayteneve93.apexexplorer.utils.PreferenceCategory
@@ -52,7 +53,9 @@ class FileModelManager(private val application : Application, private val mPrefe
                         } else onScanResult(false, null)
                     } else onScanResult(false, null)
                 }
-                override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {}
+                override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {
+                    onScanResult(false, null)
+                }
             })
             .setRationaleMessage(R.string.permission_external_storage_rational_message)
             .setDeniedMessage(R.string.permission_external_storage_denied_message)
@@ -182,6 +185,53 @@ class FileModelManager(private val application : Application, private val mPrefe
             }
         } else size = file.length().toDouble()
         return size
+    }
+
+    fun searchByKeyword(rootPath : String, keyword : String, onSearchResult : (ArrayList<FileModel>) -> Unit) {
+        TedPermission.with(application)
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    onSearchResult(getSearchedFileList(rootPath, keyword, mPreferenceUtils.getStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES)))
+                }
+                override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {
+                    onSearchResult(ArrayList())
+                }
+            })
+            .setRationaleMessage(R.string.permission_external_storage_rational_message)
+            .setDeniedMessage(R.string.permission_external_storage_denied_message)
+            .setGotoSettingButton(true)
+            .setPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .check()
+    }
+
+    private fun getSearchedFileList(path : String, keyword : String, favoriteFileSet : HashSet<String>) : ArrayList<FileModel> {
+        val currentFile = File(path)
+        val fileModelListToReturn = ArrayList<FileModel>()
+        if(currentFile.exists()) {
+            if(currentFile.canonicalPath.contains(keyword)) {
+                val currentFileModel = FileModel(
+                    getFileIconResId(currentFile),
+                    currentFile.name,
+                    currentFile.isDirectory,
+                    SimpleDateFormat.getDateTimeInstance().format(Date(currentFile.lastModified())),
+                    currentFile.isHidden,
+                    currentFile.canonicalPath,
+                    if (currentFile.path == Environment.getExternalStorageDirectory().path) null else currentFile.parent
+                )
+                currentFileModel.isFavorite.set(favoriteFileSet.contains(currentFile.canonicalPath))
+                if(!currentFileModel.isDirectory) {
+                    currentFileModel.extension = currentFile.extension
+                    setFileSizeAndUnit(currentFile, currentFileModel)
+                }
+                fileModelListToReturn.add(currentFileModel)
+            }
+            if(currentFile.isDirectory) {
+                currentFile.listFiles().forEach {
+                    fileModelListToReturn.addAll(getSearchedFileList(it.canonicalPath, keyword, favoriteFileSet))
+                }
+            }
+        }
+        return fileModelListToReturn
     }
 
 }

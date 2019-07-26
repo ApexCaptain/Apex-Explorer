@@ -8,4 +8,5 @@ class MainViewModel(
     application : Application
 ) : BaseViewModel(application) {
     val mIsViewChanging = ObservableField(false)
+    val mViewPagerVisibility = ObservableField(true)
 }

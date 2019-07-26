@@ -126,6 +126,16 @@ class FavoriteListRecyclerAdapter(
         }
     }
 
+    fun searchByKeyword(keyword : String, onSearchResult : (isEmpty : Boolean) -> Unit) {
+        val filteredFavoriteViewModelList = mFavoriteViewModelList.filter {
+            it.mFileModel.title.contains(keyword)
+        }
+        mFavoriteViewModelList.clear()
+        mFavoriteViewModelList.addAll(filteredFavoriteViewModelList)
+        notifyDataSetChanged()
+        onSearchResult(mFavoriteViewModelList.isEmpty())
+    }
+
     class FavoriteListViewHolder(
         private val binding : ItemFavoriteBinding
     ) : RecyclerView.ViewHolder(binding.root) {

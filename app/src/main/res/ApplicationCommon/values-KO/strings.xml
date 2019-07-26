@@ -33,6 +33,10 @@
         \n별표를 눌러 추가해주세요
     </string>
 
+    <string name="no_search_result">
+        검색된 파일이 없습니다
+    </string>
+
     <string name="item_favorite_extension">
         파일 형식  : %1$s
     </string>
@@ -51,6 +55,14 @@
 
     <string name="item_path_home_directory">
         홈 디렉토리
+    </string>
+
+    <string name="search_in_my_files">
+        %1$s에서 검색
+    </string>
+
+    <string name="search_by">
+        \'%1$s\'로 검색
     </string>
 
 </resources>

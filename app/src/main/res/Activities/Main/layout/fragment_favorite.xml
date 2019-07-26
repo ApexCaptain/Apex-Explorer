@@ -18,6 +18,7 @@
                 android:layout_height="0dp" app:srcCompat="@drawable/ic_empty_directory"
                 android:id="@+id/fragment_favorite_empty"
                 app:layout_constraintHeight_percent="0.3"
+
                 app:layout_constraintStart_toStartOf="@id/fragment_favorite_refresh"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/fragment_favorite_refresh"
@@ -25,7 +26,7 @@
                 app:layout_constraintVertical_bias="0.40"/>
 
         <TextView
-                android:text="@string/no_favorite_content"
+                android:text="@{viewModel.mNoContentString}"
                 android:textAlignment="center"
                 android:visibility="@{safeUnbox(viewModel.mIsEmptyDirectory) ? View.VISIBLE : View.GONE}"
                 android:textStyle="bold"

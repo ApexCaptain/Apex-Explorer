@@ -8,6 +8,8 @@ object MainBroadcastPreference {
             const val FRAGMENT_UNSELECTED = "view#main#MainBroadcastPreference#MainToFragment#Action#FRAGMENT_UNSELECTED"
             const val BACK_BUTTON_PRESSED = "view#main#MainBroadcastPreference#MainToFragment#Action#BACK_BUTTON_PRESSED"
             const val PATH_CLICKED = "view#main#MainBroadcastPreference#MainToFragment#Action#PATH_CLICKED"
+            const val SEARCH = "view#main#MainBroadcastPreference#MainToFragment#Action#SEARCH"
+            const val SEARCH_FINISHED = "view#main#MainBroadcastPreference#MainToFragment#Action#SEARCH_FINISHED"
         }
         object Who {
             const val KEY = "view#main#MainBroadcastPreference#MainToFragment#Who#KEY"
@@ -18,6 +20,9 @@ object MainBroadcastPreference {
         }
         object Path {
             const val KEY = "view#main#MainBroadcastPreference#MainToFragment#Path#KEY"
+        }
+        object Keyword {
+            const val KEY = "view#main#MainBroadcastPreference#MainToFragment#Keyword#KEY"
         }
     }
 

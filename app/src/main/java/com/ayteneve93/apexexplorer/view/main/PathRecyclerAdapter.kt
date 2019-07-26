@@ -88,6 +88,17 @@ class PathRecyclerAdapter(private val application : Application) : RecyclerView.
         notifyDataSetChanged()
     }
 
+    fun setToSearch(keyword : String) {
+        mPathViewModelList.clear()
+        mPathViewModelList.add(PathViewModel(application).apply {
+            mDirectoryTitle = application.getString(R.string.search_by, keyword)
+            onItemClickListener = {}
+            mNextIndicatorString = ""
+            mIsSelected = true
+        })
+        notifyDataSetChanged()
+    }
+
     class FilePathViewHolder(
         private val binding : ItemPathBinding
     ) : RecyclerView.ViewHolder(binding.root){

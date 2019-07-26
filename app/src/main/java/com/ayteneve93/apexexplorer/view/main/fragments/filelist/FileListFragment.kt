@@ -3,6 +3,7 @@ package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 import android.content.*
 import android.content.res.Configuration
 import android.os.Environment
+import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
@@ -31,6 +32,7 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
     private val mPreferenceUtils : PreferenceUtils by inject()
     private val mFileModelManager : FileModelManager by inject()
     private var mCurrentPath : String? = mPreferenceUtils.getStringUserPreference(PreferenceCategory.User.LAST_VIEWED_FOLDER_NAME, null)
+    private var mIsSearchMode = false
 
     private val mFileListBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context : Context?, intent : Intent?) {
@@ -56,6 +58,24 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
                             MainBroadcastPreference.MainToFragment.Action.PATH_CLICKED -> {
                                 val clickedPath = it.getStringExtra(MainBroadcastPreference.MainToFragment.Path.KEY)
                                 refreshFileListStepTwo(clickedPath, false)
+                            }
+                            MainBroadcastPreference.MainToFragment.Action.SEARCH -> {
+                                mIsSearchMode = true
+                                mViewDataBinding.fragmentFileListRefresh.isRefreshing = true
+                                mFileListRecyclerAdapter.searchByKeyword(mCurrentPath?:Environment.getExternalStorageDirectory().path, intent.getStringExtra(MainBroadcastPreference.MainToFragment.Keyword.KEY)) {
+                                    isEmpty ->
+                                    if(isEmpty) {
+                                        mFileListViewModel.mNoContentString.value = getString(R.string.no_search_result)
+                                    }
+                                    mFileListViewModel.mIsEmptyDirectory.set(isEmpty)
+                                    mViewDataBinding.fragmentFileListRefresh.isRefreshing = false
+                                    mViewDataBinding.fragmentFileListRefresh.isEnabled = false
+                                }
+                            }
+                            MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED -> {
+                                mIsSearchMode = false
+                                mViewDataBinding.fragmentFileListRefresh.isEnabled = true
+                                refreshFileListStepTwo(mCurrentPath, false)
                             }
                         }
                     }
@@ -124,6 +144,8 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
                 MainBroadcastPreference.MainToFragment.Action.FRAGMENT_UNSELECTED,
                 MainBroadcastPreference.MainToFragment.Action.BACK_BUTTON_PRESSED,
                 MainBroadcastPreference.MainToFragment.Action.PATH_CLICKED,
+                MainBroadcastPreference.MainToFragment.Action.SEARCH,
+                MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED,
 
                 MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED,
                 MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_EMPTY,
@@ -154,7 +176,7 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
 
     private fun setFilesRefreshLayout() {
         mViewDataBinding.fragmentFileListRefresh.setOnRefreshListener {
-            refreshFileListStepOne(mCurrentPath)
+            if(!mIsSearchMode)refreshFileListStepOne(mCurrentPath)
         }
     }
 
@@ -188,6 +210,7 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
             mViewDataBinding.fragmentFileListRefresh.isRefreshing = false
             if(isSucceed) {
                 mCurrentPath = path
+                if(isEmpty) mFileListViewModel.mNoContentString.value = getString(R.string.directory_no_content)
                 mFileListViewModel.mIsEmptyDirectory.set(isEmpty)
                 (mActivity as MainActivity).refreshPathRecyclerView(mCurrentPath)
             } else {
