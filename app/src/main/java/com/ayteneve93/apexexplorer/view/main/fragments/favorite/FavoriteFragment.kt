@@ -60,7 +60,6 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
                                 }
                             }
                             MainBroadcastPreference.MainToFragment.Action.SEARCH_FINISHED -> {
-                                Log.d("ayteneve93_test", "qwe")
                                 mIsSearchMode = false
                                 mViewDataBinding.fragmentFavoriteRefresh.isEnabled = true
                                 refreshFavoriteListStepTwo(false)
@@ -87,6 +86,14 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
 
 
             }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        when(newConfig.orientation) {
+            Configuration.ORIENTATION_PORTRAIT -> mViewDataBinding.fragmentFavoriteRecyclerView.layoutManager = GridLayoutManager(mActivity, 1)
+            Configuration.ORIENTATION_LANDSCAPE -> mViewDataBinding.fragmentFavoriteRecyclerView.layoutManager = GridLayoutManager(mActivity, 2)
         }
     }
 

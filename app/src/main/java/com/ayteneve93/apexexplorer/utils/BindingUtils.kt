@@ -12,12 +12,6 @@ object BindingUtils {
 
     @JvmStatic
     @BindingAdapter("android:src")
-    fun setImageViewFromResId(view : ImageView, resId : Int) {
-        view.setImageResource(resId)
-    }
-
-    @JvmStatic
-    @BindingAdapter("android:src")
     fun setImageViewFromUri(view : ImageView, uri : Uri) {
         view.setImageURI(uri)
     }

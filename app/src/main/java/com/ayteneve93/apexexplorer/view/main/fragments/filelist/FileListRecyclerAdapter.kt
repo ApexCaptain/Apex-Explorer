@@ -57,6 +57,7 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                     eachFileModel ->
                     mFileViewModelList.add(FileViewModel(application).apply {
                         mFileModel = eachFileModel
+                        mThumbnail.set(mFileModelManager.getThumbnailUriFromModel(eachFileModel))
                         mSubTitle = if(eachFileModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
                         else "${kotlin.math.round(eachFileModel.size!! * 100) / 100} ${eachFileModel.sizeUnit}"
                         onFavoriteButtonClickListener = {
@@ -90,44 +91,47 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
     }
 
     fun searchByKeyword(rootPath : String, keyword : String, onSearchResult : (isEmpty : Boolean) -> Unit) {
-        mFileViewModelList.clear()
-        notifyDataSetChanged()
-        mFileModelManager.searchByKeyword(rootPath, keyword) {
-            fileModelList ->
-            fileModelList.sortWith(compareBy ({ it.iconResId }, {it.title}) )
-            fileModelList.forEach {
-                eachFileModel ->
-                mFileViewModelList.add(FileViewModel(application).apply {
-                    mFileModel = eachFileModel
-                    mSubTitle = if(eachFileModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
-                    else "${kotlin.math.round(eachFileModel.size!! * 100) / 100} ${eachFileModel.sizeUnit}"
-                    onFavoriteButtonClickListener = {
-                        val currentFavoriteState = mFileModel.isFavorite.get()
-                        if(currentFavoriteState!!) {
-                            mPreferenceUtils.removeStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
-                            mFileModel.isFavorite.set(false)
-                        } else {
-                            mPreferenceUtils.addStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
-                            mFileModel.isFavorite.set(true)
-                        }
-                        application.sendBroadcast(Intent(MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED)
-                            .putExtra(MainBroadcastPreference.FragmentToFragment.Who.KEY, MainBroadcastPreference.FragmentToFragment.Who.Values.FAVORITE))
-                    }
-                    onItemClickListener = {
-                        fileClickedListener?.let {
-                            it(mFileModel)
-                        }
-                    }
-                    onItemLongClickListener = {
-                            view ->
-                        Log.d("ayteneve93_test", "long clicked ${eachFileModel.canonicalPath}")
-                        false
-                    }
-                })
-            }
+        Handler().postDelayed({
+            mFileViewModelList.clear()
             notifyDataSetChanged()
-            onSearchResult(mFileViewModelList.isEmpty())
-        }
+            mFileModelManager.searchByKeyword(rootPath, keyword) {
+                fileModelList ->
+                fileModelList.sortWith(compareBy ({ it.iconResId }, {it.title}) )
+                fileModelList.forEach {
+                    eachFileModel ->
+                    mFileViewModelList.add(FileViewModel(application).apply {
+                        mFileModel = eachFileModel
+                        mThumbnail.set(mFileModelManager.getThumbnailUriFromModel(eachFileModel))
+                        mSubTitle = if(eachFileModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
+                        else "${kotlin.math.round(eachFileModel.size!! * 100) / 100} ${eachFileModel.sizeUnit}"
+                        onFavoriteButtonClickListener = {
+                            val currentFavoriteState = mFileModel.isFavorite.get()
+                            if(currentFavoriteState!!) {
+                                mPreferenceUtils.removeStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
+                                mFileModel.isFavorite.set(false)
+                            } else {
+                                mPreferenceUtils.addStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
+                                mFileModel.isFavorite.set(true)
+                            }
+                            application.sendBroadcast(Intent(MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED)
+                                .putExtra(MainBroadcastPreference.FragmentToFragment.Who.KEY, MainBroadcastPreference.FragmentToFragment.Who.Values.FAVORITE))
+                        }
+                        onItemClickListener = {
+                            fileClickedListener?.let {
+                                it(mFileModel)
+                            }
+                        }
+                        onItemLongClickListener = {
+                                view ->
+                            Log.d("ayteneve93_test", "long clicked ${eachFileModel.canonicalPath}")
+                            false
+                        }
+                    })
+                }
+                notifyDataSetChanged()
+                onSearchResult(mFileViewModelList.isEmpty())
+            }
+        }, 500)
     }
 
     class FileListViewHolder(
