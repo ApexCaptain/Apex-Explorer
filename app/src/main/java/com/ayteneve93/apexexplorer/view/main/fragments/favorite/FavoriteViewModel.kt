@@ -12,6 +12,6 @@ class FavoriteViewModel(
     var mShouldRecyclerViewInvisible = ObservableField(false)
     var mIsEmptyDirectory = ObservableField(false)
     var mNoContentString = MutableLiveData<CharSequence>().apply {
-        value = application.getString(R.string.directory_no_content)
+        value = application.getString(R.string.no_favorite_content)
     }
 }

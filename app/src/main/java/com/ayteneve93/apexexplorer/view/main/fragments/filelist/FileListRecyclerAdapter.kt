@@ -79,7 +79,6 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                         }
                         onItemLongClickListener = {
                             view ->
-                            Log.d("ayteneve93_test", "long clicked ${eachFileModel.canonicalPath}")
                             false
                         }
                     })
@@ -122,8 +121,7 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                             }
                         }
                         onItemLongClickListener = {
-                                view ->
-                            Log.d("ayteneve93_test", "long clicked ${eachFileModel.canonicalPath}")
+                            view ->
                             false
                         }
                     })
