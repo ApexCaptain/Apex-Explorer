@@ -3,7 +3,6 @@ package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 import android.content.*
 import android.content.res.Configuration
 import android.os.Environment
-import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast

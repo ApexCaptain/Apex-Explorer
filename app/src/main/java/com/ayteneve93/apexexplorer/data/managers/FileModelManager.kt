@@ -13,6 +13,9 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
@@ -192,9 +195,16 @@ class FileModelManager(private val application : Application, private val mPrefe
                 override fun onPermissionGranted() {
                     var lastNodeFile = File(searchPath)
                     while(lastNodeFile.isDirectory) lastNodeFile = lastNodeFile.listFiles().last()
-                    onSearchResult(Observable.create {
+
+                    val fileModelObservable : Observable<FileModel> = Observable.create {
                         getSearchedFileList(it, searchPath, keyword, lastNodeFile.canonicalPath, mPreferenceUtils.getStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES))
-                    })
+                    }
+                    onSearchResult(
+                        fileModelObservable
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                    )
+
                 }
                 override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {
                     onSearchResult(null)
