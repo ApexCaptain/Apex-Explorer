@@ -186,7 +186,7 @@ class FileModelManager(private val application : Application, private val mPrefe
         return size
     }
 
-    fun rxSearchByKeyword(searchPath : String, keyword : String, onSearchResult : (Observable<FileModel>) -> Unit) {
+    fun rxSearchByKeyword(searchPath : String, keyword : String, onSearchResult : (Observable<FileModel>?) -> Unit) {
         TedPermission.with(application)
             .setPermissionListener(object : PermissionListener {
                 override fun onPermissionGranted() {
@@ -197,6 +197,7 @@ class FileModelManager(private val application : Application, private val mPrefe
                     })
                 }
                 override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {
+                    onSearchResult(null)
                 }
             })
             .setRationaleMessage(R.string.permission_external_storage_rational_message)

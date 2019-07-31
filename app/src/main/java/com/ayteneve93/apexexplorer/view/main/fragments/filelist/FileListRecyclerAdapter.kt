@@ -91,43 +91,56 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
         mFileViewModelList.clear()
         notifyDataSetChanged()
         mFileModelManager.rxSearchByKeyword(searchPath, keyword) {
-                it.subscribe ({
-                    mFileViewModelList.add(FileViewModel(application).apply {
-                        mFileModel = it
-                        mThumbnail.set(mFileModelManager.getThumbnailUriFromModel(it))
-                        mSubTitle = if(it.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
+            it?.subscribe({
+                mFileViewModelList.add(FileViewModel(application).apply {
+                    mFileModel = it
+                    mThumbnail.set(mFileModelManager.getThumbnailUriFromModel(it))
+                    mSubTitle =
+                        if (it.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
                         else "${kotlin.math.round(it.size!! * 100) / 100} ${it.sizeUnit}"
-                        onFavoriteButtonClickListener = {
-                            val currentFavoriteState = mFileModel.isFavorite.get()
-                            if(currentFavoriteState!!) {
-                                mPreferenceUtils.removeStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
-                                mFileModel.isFavorite.set(false)
-                            } else {
-                                mPreferenceUtils.addStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES, mFileModel.canonicalPath)
-                                mFileModel.isFavorite.set(true)
-                            }
-                            application.sendBroadcast(Intent(MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED)
-                                .putExtra(MainBroadcastPreference.FragmentToFragment.Who.KEY, MainBroadcastPreference.FragmentToFragment.Who.Values.FAVORITE))
+                    onFavoriteButtonClickListener = {
+                        val currentFavoriteState = mFileModel.isFavorite.get()
+                        if (currentFavoriteState!!) {
+                            mPreferenceUtils.removeStringUserPreferenceSet(
+                                PreferenceCategory.User.FAVORITE_FILES,
+                                mFileModel.canonicalPath
+                            )
+                            mFileModel.isFavorite.set(false)
+                        } else {
+                            mPreferenceUtils.addStringUserPreferenceSet(
+                                PreferenceCategory.User.FAVORITE_FILES,
+                                mFileModel.canonicalPath
+                            )
+                            mFileModel.isFavorite.set(true)
                         }
-                        onItemClickListener = {
-                            fileClickedListener?.let {
-                                it(mFileModel)
-                            }
+                        application.sendBroadcast(
+                            Intent(MainBroadcastPreference.FragmentToFragment.Action.FAVORITE_LIST_CHANGED)
+                                .putExtra(
+                                    MainBroadcastPreference.FragmentToFragment.Who.KEY,
+                                    MainBroadcastPreference.FragmentToFragment.Who.Values.FAVORITE
+                                )
+                        )
+                    }
+                    onItemClickListener = {
+                        fileClickedListener?.let {
+                            it(mFileModel)
                         }
-                        onItemLongClickListener = {
-                            view ->
-                            false
-                        }
-                    })
-                    notifyDataSetChanged()
-                },
-                {
-                    error ->
+                    }
+                    onItemLongClickListener = { view ->
+                        false
+                    }
+                })
+                notifyDataSetChanged()
+            },
+                { error ->
                     error.printStackTrace()
                     onSearchResult(mFileViewModelList.isEmpty())
                 },
                 { onSearchResult(mFileViewModelList.isEmpty()) }
             )
+            if(it == null) {
+                onSearchResult(mFileViewModelList.isEmpty())
+            }
         }
 
     }
