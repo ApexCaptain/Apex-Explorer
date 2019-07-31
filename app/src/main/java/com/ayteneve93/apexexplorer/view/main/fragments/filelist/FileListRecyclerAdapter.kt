@@ -2,8 +2,6 @@ package com.ayteneve93.apexexplorer.view.main.fragments.filelist
 
 import android.app.Application
 import android.content.Intent
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -90,19 +88,16 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
     }
 
     fun searchByKeyword(rootPath : String, keyword : String, onSearchResult : (isEmpty : Boolean) -> Unit) {
-        Handler().postDelayed({
-            mFileViewModelList.clear()
-            notifyDataSetChanged()
-            mFileModelManager.searchByKeyword(rootPath, keyword) {
-                fileModelList ->
-                fileModelList.sortWith(compareBy ({ it.iconResId }, {it.title}) )
-                fileModelList.forEach {
-                    eachFileModel ->
+
+        mFileViewModelList.clear()
+        notifyDataSetChanged()
+        mFileModelManager.rxSearchByKeyword(rootPath, keyword) {
+                it.subscribe ({
                     mFileViewModelList.add(FileViewModel(application).apply {
-                        mFileModel = eachFileModel
-                        mThumbnail.set(mFileModelManager.getThumbnailUriFromModel(eachFileModel))
-                        mSubTitle = if(eachFileModel.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
-                        else "${kotlin.math.round(eachFileModel.size!! * 100) / 100} ${eachFileModel.sizeUnit}"
+                        mFileModel = it
+                        mThumbnail.set(mFileModelManager.getThumbnailUriFromModel(it))
+                        mSubTitle = if(it.isDirectory) application.resources.getString(R.string.file_extensions_case_directory)
+                        else "${kotlin.math.round(it.size!! * 100) / 100} ${it.sizeUnit}"
                         onFavoriteButtonClickListener = {
                             val currentFavoriteState = mFileModel.isFavorite.get()
                             if(currentFavoriteState!!) {
@@ -125,11 +120,17 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                             false
                         }
                     })
+                    notifyDataSetChanged()
+                },
+                {
+
+                },
+                {
+                    onSearchResult(mFileViewModelList.isEmpty())
                 }
-                notifyDataSetChanged()
-                onSearchResult(mFileViewModelList.isEmpty())
-            }
-        }, 500)
+            )
+        }
+
     }
 
     class FileListViewHolder(

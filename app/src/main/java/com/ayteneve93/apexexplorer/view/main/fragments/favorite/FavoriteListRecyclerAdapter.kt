@@ -127,6 +127,7 @@ class FavoriteListRecyclerAdapter(
     }
 
     fun searchByKeyword(keyword : String, onSearchResult : (isEmpty : Boolean) -> Unit) {
+
         val filteredFavoriteViewModelList = mFavoriteViewModelList.filter {
             it.mFileModel.title.contains(keyword)
         }
@@ -134,6 +135,7 @@ class FavoriteListRecyclerAdapter(
         mFavoriteViewModelList.addAll(filteredFavoriteViewModelList)
         notifyDataSetChanged()
         onSearchResult(mFavoriteViewModelList.isEmpty())
+
     }
 
     class FavoriteListViewHolder(

@@ -17,6 +17,8 @@ import com.ayteneve93.apexexplorer.utils.PreferenceUtils
 import com.ayteneve93.apexexplorer.utils.PreferenceCategory
 import com.ayteneve93.apexexplorer.view.base.BaseActivity
 import com.ayteneve93.apexexplorer.view.main.MainActivity
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.view.animation.Animation
@@ -23,9 +24,14 @@ import com.ayteneve93.apexexplorer.R
 import com.ayteneve93.apexexplorer.data.managers.UserAccountInfoModelManager
 import com.ayteneve93.apexexplorer.databinding.ActivityMainBinding
 import com.ayteneve93.apexexplorer.view.base.BaseActivity
+import io.reactivex.Maybe
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import me.relex.circleindicator.CircleIndicator3
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.util.concurrent.TimeUnit
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
@@ -62,12 +68,12 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     override fun getBindingVariable(): Int { return BR.viewModel }
 
     override fun setUp() {
+
         setBroadcastReceiver()
         setViewPagerProperties()
         setPathRecyclerView()
         setToolBar()
     }
-
 
     private fun setBroadcastReceiver() {
         val mainIntentFilter = IntentFilter()

@@ -2,10 +2,6 @@ package com.ayteneve93.apexexplorer.data.managers
 
 import android.app.Application
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.ExifInterface
-import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -15,6 +11,8 @@ import com.ayteneve93.apexexplorer.utils.PreferenceCategory
 import com.ayteneve93.apexexplorer.utils.PreferenceUtils
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -187,14 +185,17 @@ class FileModelManager(private val application : Application, private val mPrefe
         return size
     }
 
-    fun searchByKeyword(rootPath : String, keyword : String, onSearchResult : (ArrayList<FileModel>) -> Unit) {
+    fun rxSearchByKeyword(searchPath : String, keyword : String, onSearchResult : (Observable<FileModel>) -> Unit) {
         TedPermission.with(application)
             .setPermissionListener(object : PermissionListener {
                 override fun onPermissionGranted() {
-                    onSearchResult(getSearchedFileList(rootPath, keyword, mPreferenceUtils.getStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES)))
+                    var lastNodeFile = File(searchPath)
+                    while(lastNodeFile.isDirectory) lastNodeFile = lastNodeFile.listFiles().last()
+                    onSearchResult(Observable.create {
+                        getSearchedFileList(it, searchPath, keyword, lastNodeFile.canonicalPath, mPreferenceUtils.getStringUserPreferenceSet(PreferenceCategory.User.FAVORITE_FILES))
+                    })
                 }
                 override fun onPermissionDenied(deniedPermissions: java.util.ArrayList<String>?) {
-                    onSearchResult(ArrayList())
                 }
             })
             .setRationaleMessage(R.string.permission_external_storage_rational_message)
@@ -204,11 +205,10 @@ class FileModelManager(private val application : Application, private val mPrefe
             .check()
     }
 
-    private fun getSearchedFileList(path : String, keyword : String, favoriteFileSet : HashSet<String>) : ArrayList<FileModel> {
-        val currentFile = File(path)
-        val fileModelListToReturn = ArrayList<FileModel>()
+    private fun getSearchedFileList(emitter : ObservableEmitter<FileModel>, searchPath : String, keyWord : String, lastNodePath : String, favoriteFileSet : HashSet<String>) {
+        val currentFile = File(searchPath)
         if(currentFile.exists()) {
-            if(currentFile.canonicalPath.contains(keyword)) {
+            if(currentFile.name.contains(keyWord)) {
                 val currentFileModel = FileModel(
                     getFileIconResId(currentFile),
                     currentFile.name,
@@ -216,22 +216,24 @@ class FileModelManager(private val application : Application, private val mPrefe
                     SimpleDateFormat.getDateTimeInstance().format(Date(currentFile.lastModified())),
                     currentFile.isHidden,
                     currentFile.canonicalPath,
-                    if (currentFile.path == Environment.getExternalStorageDirectory().path) null else currentFile.parent
+                    if(currentFile.path == Environment.getExternalStorageDirectory().path) null else currentFile.parent
                 )
                 currentFileModel.isFavorite.set(favoriteFileSet.contains(currentFile.canonicalPath))
                 if(!currentFileModel.isDirectory) {
                     currentFileModel.extension = currentFile.extension
                     setFileSizeAndUnit(currentFile, currentFileModel)
                 }
-                fileModelListToReturn.add(currentFileModel)
+                emitter.onNext(currentFileModel)
             }
             if(currentFile.isDirectory) {
                 currentFile.listFiles().forEach {
-                    fileModelListToReturn.addAll(getSearchedFileList(it.canonicalPath, keyword, favoriteFileSet))
+                    getSearchedFileList(emitter, it.canonicalPath, keyWord, lastNodePath, favoriteFileSet)
                 }
             }
+            if(currentFile.canonicalPath == lastNodePath) {
+                emitter.onComplete()
+            }
         }
-        return fileModelListToReturn
     }
 
 }
