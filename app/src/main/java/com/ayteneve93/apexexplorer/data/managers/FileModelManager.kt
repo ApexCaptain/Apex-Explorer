@@ -14,6 +14,7 @@ import com.gun0912.tedpermission.TedPermission
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import java.io.File
+import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -233,7 +234,7 @@ class FileModelManager(private val application : Application, private val mPrefe
             if(currentFile.canonicalPath == lastNodePath) {
                 emitter.onComplete()
             }
-        }
+        } else emitter.onError(FileNotFoundException("File in $searchPath is not found"))
     }
 
 }

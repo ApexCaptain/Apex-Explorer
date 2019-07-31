@@ -87,11 +87,10 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
         }
     }
 
-    fun searchByKeyword(rootPath : String, keyword : String, onSearchResult : (isEmpty : Boolean) -> Unit) {
-
+    fun searchByKeyword(searchPath : String, keyword : String, onSearchResult : (isEmpty : Boolean) -> Unit) {
         mFileViewModelList.clear()
         notifyDataSetChanged()
-        mFileModelManager.rxSearchByKeyword(rootPath, keyword) {
+        mFileModelManager.rxSearchByKeyword(searchPath, keyword) {
                 it.subscribe ({
                     mFileViewModelList.add(FileViewModel(application).apply {
                         mFileModel = it
@@ -123,11 +122,11 @@ class FileListRecyclerAdapter(private val mPreferenceUtils: PreferenceUtils, pri
                     notifyDataSetChanged()
                 },
                 {
-
-                },
-                {
+                    error ->
+                    error.printStackTrace()
                     onSearchResult(mFileViewModelList.isEmpty())
-                }
+                },
+                { onSearchResult(mFileViewModelList.isEmpty()) }
             )
         }
 

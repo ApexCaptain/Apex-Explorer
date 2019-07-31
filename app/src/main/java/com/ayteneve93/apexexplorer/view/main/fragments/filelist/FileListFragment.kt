@@ -64,10 +64,7 @@ class FileListFragment : BaseFragment<FragmentFileListBinding, FileListViewModel
                                 mViewDataBinding.fragmentFileListRefresh.isRefreshing = true
                                 mFileListRecyclerAdapter.searchByKeyword(mCurrentPath?:Environment.getExternalStorageDirectory().path, intent.getStringExtra(MainBroadcastPreference.MainToFragment.Keyword.KEY)) {
                                     isEmpty ->
-                                    Log.d("ayteneve93_test", "searchFinished")
-                                    if(isEmpty) {
-                                        mFileListViewModel.mNoContentString.value = getString(R.string.no_search_result)
-                                    }
+                                    if(isEmpty) mFileListViewModel.mNoContentString.value = getString(R.string.no_search_result)
                                     mFileListViewModel.mIsEmptyDirectory.set(isEmpty)
                                     mViewDataBinding.fragmentFileListRefresh.isRefreshing = false
                                     mViewDataBinding.fragmentFileListRefresh.isEnabled = false
